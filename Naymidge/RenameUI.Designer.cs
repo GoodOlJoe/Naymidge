@@ -34,18 +34,19 @@
             // flyleafHost
             // 
             flyleafHost.AllowDrop = true;
+            flyleafHost.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             flyleafHost.BackColor = Color.Black;
             flyleafHost.DragMove = true;
             flyleafHost.IsFullScreen = false;
             flyleafHost.KeyBindings = true;
-            flyleafHost.Location = new Point(62, 24);
+            flyleafHost.Location = new Point(6, 6);
             flyleafHost.Name = "flyleafHost";
             flyleafHost.OpenOnDrop = false;
             flyleafHost.PanMoveOnCtrl = true;
             flyleafHost.PanRotateOnShiftWheel = true;
             flyleafHost.PanZoomOnCtrlWheel = true;
             flyleafHost.Player = null;
-            flyleafHost.Size = new Size(488, 280);
+            flyleafHost.Size = new Size(790, 440);
             flyleafHost.SwapDragEnterOnShift = true;
             flyleafHost.SwapOnDrop = true;
             flyleafHost.TabIndex = 0;

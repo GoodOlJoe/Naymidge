@@ -68,7 +68,7 @@
             InputGroup.Controls.Add(txtContentDirectory);
             InputGroup.Location = new Point(22, 21);
             InputGroup.Name = "InputGroup";
-            InputGroup.Size = new Size(887, 137);
+            InputGroup.Size = new Size(1086, 137);
             InputGroup.TabIndex = 0;
             InputGroup.TabStop = false;
             InputGroup.Text = "Content Directory";
@@ -77,7 +77,7 @@
             // 
             CmdPickContentDirectory.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             CmdPickContentDirectory.Font = new Font("Wingdings", 12F, FontStyle.Regular, GraphicsUnit.Point, 2);
-            CmdPickContentDirectory.Location = new Point(822, 26);
+            CmdPickContentDirectory.Location = new Point(1021, 26);
             CmdPickContentDirectory.Margin = new Padding(4, 5, 4, 5);
             CmdPickContentDirectory.Name = "CmdPickContentDirectory";
             CmdPickContentDirectory.Size = new Size(35, 26);
@@ -96,7 +96,7 @@
             txtContentDirectoryStatus.Multiline = true;
             txtContentDirectoryStatus.Name = "txtContentDirectoryStatus";
             txtContentDirectoryStatus.ReadOnly = true;
-            txtContentDirectoryStatus.Size = new Size(589, 56);
+            txtContentDirectoryStatus.Size = new Size(788, 56);
             txtContentDirectoryStatus.TabIndex = 3;
             txtContentDirectoryStatus.Tag = "Patterns not applied yet";
             // 
@@ -126,7 +126,7 @@
             txtContentDirectory.Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
             txtContentDirectory.Location = new Point(30, 29);
             txtContentDirectory.Name = "txtContentDirectory";
-            txtContentDirectory.Size = new Size(784, 25);
+            txtContentDirectory.Size = new Size(983, 25);
             txtContentDirectory.TabIndex = 0;
             txtContentDirectory.Text = "{last used output file}";
             txtContentDirectory.TextChanged += Selection_Changed;
@@ -143,7 +143,7 @@
             RefineGroup.Controls.Add(PicSelectionStatus);
             RefineGroup.Location = new Point(22, 158);
             RefineGroup.Name = "RefineGroup";
-            RefineGroup.Size = new Size(887, 236);
+            RefineGroup.Size = new Size(1086, 268);
             RefineGroup.TabIndex = 1;
             RefineGroup.TabStop = false;
             RefineGroup.Text = "Refine Content";
@@ -152,7 +152,7 @@
             // 
             IncludedFilesLabel.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             IncludedFilesLabel.AutoSize = true;
-            IncludedFilesLabel.Location = new Point(559, 19);
+            IncludedFilesLabel.Location = new Point(663, 19);
             IncludedFilesLabel.Margin = new Padding(4, 0, 4, 0);
             IncludedFilesLabel.Name = "IncludedFilesLabel";
             IncludedFilesLabel.Size = new Size(82, 21);
@@ -185,12 +185,12 @@
             tvIncluded.BackColor = Color.FromArgb(221, 255, 224);
             tvIncluded.Font = new Font("Consolas", 12F);
             tvIncluded.ForeColor = Color.Green;
-            tvIncluded.Location = new Point(563, 42);
+            tvIncluded.Location = new Point(663, 42);
             tvIncluded.Name = "tvIncluded";
             tvIncluded.ShowLines = false;
             tvIncluded.ShowNodeToolTips = true;
             tvIncluded.ShowRootLines = false;
-            tvIncluded.Size = new Size(300, 176);
+            tvIncluded.Size = new Size(399, 208);
             tvIncluded.TabIndex = 3;
             // 
             // tvNotIncluded
@@ -200,12 +200,12 @@
             tvNotIncluded.Font = new Font("Consolas", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             tvNotIncluded.ForeColor = Color.Maroon;
             tvNotIncluded.ItemHeight = 24;
-            tvNotIncluded.Location = new Point(297, 42);
+            tvNotIncluded.Location = new Point(295, 42);
             tvNotIncluded.Name = "tvNotIncluded";
             tvNotIncluded.ShowLines = false;
             tvNotIncluded.ShowNodeToolTips = true;
             tvNotIncluded.ShowRootLines = false;
-            tvNotIncluded.Size = new Size(258, 176);
+            tvNotIncluded.Size = new Size(360, 208);
             tvNotIncluded.TabIndex = 2;
             // 
             // txtPatterns
@@ -216,7 +216,7 @@
             txtPatterns.Multiline = true;
             txtPatterns.Name = "txtPatterns";
             txtPatterns.ScrollBars = ScrollBars.Vertical;
-            txtPatterns.Size = new Size(182, 176);
+            txtPatterns.Size = new Size(182, 208);
             txtPatterns.TabIndex = 1;
             txtPatterns.TextChanged += Selection_Changed;
             // 
@@ -233,9 +233,9 @@
             // 
             RenameGroup.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             RenameGroup.Controls.Add(CmdRename);
-            RenameGroup.Location = new Point(22, 400);
+            RenameGroup.Location = new Point(22, 432);
             RenameGroup.Name = "RenameGroup";
-            RenameGroup.Size = new Size(887, 74);
+            RenameGroup.Size = new Size(1086, 74);
             RenameGroup.TabIndex = 2;
             RenameGroup.TabStop = false;
             RenameGroup.Text = "Rename";
@@ -243,18 +243,18 @@
             // CmdRename
             // 
             CmdRename.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            CmdRename.Location = new Point(714, 18);
+            CmdRename.Location = new Point(827, 22);
             CmdRename.Name = "CmdRename";
-            CmdRename.Size = new Size(149, 41);
+            CmdRename.Size = new Size(235, 41);
             CmdRename.TabIndex = 0;
-            CmdRename.Text = "&Rename Content";
+            CmdRename.Text = "View and &Rename Content";
             CmdRename.UseVisualStyleBackColor = true;
             CmdRename.Click += CmdRename_Click;
             // 
             // cmdClose
             // 
             cmdClose.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            cmdClose.Location = new Point(726, 493);
+            cmdClose.Location = new Point(925, 525);
             cmdClose.Name = "cmdClose";
             cmdClose.Size = new Size(184, 38);
             cmdClose.TabIndex = 3;
@@ -282,7 +282,7 @@
             // 
             AutoScaleDimensions = new SizeF(9F, 21F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(933, 550);
+            ClientSize = new Size(1132, 582);
             Controls.Add(cmdClose);
             Controls.Add(RenameGroup);
             Controls.Add(RefineGroup);

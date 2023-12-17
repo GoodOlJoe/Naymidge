@@ -18,6 +18,7 @@ namespace Naymidge
         private readonly List<string> _Contents = new List<string>(1000);
         private readonly Stack<Cursor> CursorStack = new Stack<Cursor>(); // for tracking busy cursor
         private readonly ProcessingScope _Scope = new ProcessingScope();
+        //private readonly Settings _UserSettings = new Settings();
 
         public GetParameters()
         {
@@ -29,7 +30,17 @@ namespace Naymidge
             TimerUIRefresh.Enabled = true;
             SelectionStatusImageList.Images.AddStrip(Properties.Resources.BlackRedGreen72x3);
             CurrentSelectionStatus = SelectionStatus.NoContentDirectory;
+            SetControlMruBindings();
             DoRefreshSelection();
+        }
+        private void SetControlMruBindings()
+        {
+            txtContentDirectory.DataBindings.Add(new Binding("Text", Properties.Settings.Default, "MruContentDirectory", true, DataSourceUpdateMode.OnPropertyChanged));
+            txtContentDirectory.Text = Properties.Settings.Default.MruContentDirectory;
+            txtPatterns.DataBindings.Add(new Binding("Text", Properties.Settings.Default, "MruFilenamePatterns", true, DataSourceUpdateMode.OnPropertyChanged));
+            txtPatterns.Text = Properties.Settings.Default.MruFilenamePatterns;
+            CheckboxIncludeSubdirectories.DataBindings.Add(new Binding("Checked", Properties.Settings.Default, "MruIncludeSubdirectories", true, DataSourceUpdateMode.OnPropertyChanged));
+            CheckboxIncludeSubdirectories.Checked = Properties.Settings.Default.MruIncludeSubdirectories;
         }
         private bool UpdateScope()
         {
@@ -61,7 +72,7 @@ namespace Naymidge
         private void Selection_Changed(object sender, EventArgs e) { ResetSelectionRefreshTimer(); }
         private void TimerUIRefresh_Tick(object sender, EventArgs e) { UpdateUIEnablement(); }
         private void CmdPickContentDirectory_Click(object sender, EventArgs e) { DoPickContentDirectory(); }
-        private void GetParameters_FormClosing(object sender, FormClosingEventArgs e) { /*Properties.Settings.Default.Save();*/ }
+        private void GetParameters_FormClosing(object sender, FormClosingEventArgs e) { Naymidge.Properties.Settings.Default.Save(); }
         private void GetParameters_Resize(object sender, EventArgs e) { PositionComponents(); }
 
         //private void DoIngest()
@@ -118,9 +129,10 @@ namespace Naymidge
             ContentDirectoryDialog.InitialDirectory = txtContentDirectory.Text.Trim();
             ContentDirectoryDialog.CheckPathExists = true;
             ContentDirectoryDialog.CheckFileExists = false;
+            ContentDirectoryDialog.OverwritePrompt = false;
             ContentDirectoryDialog.FileName = "Process This Directory";
             ContentDirectoryDialog.Title = "Choose directory to process";
-            ContentDirectoryDialog.Filter = "Directory | directory";
+            ContentDirectoryDialog.Filter = "Directory|directory|All files|*.*";
 
             if (DialogResult.OK == ContentDirectoryDialog.ShowDialog(this))
             {
@@ -141,8 +153,12 @@ namespace Naymidge
                     SearchOption opt = CheckboxIncludeSubdirectories.Checked ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
                     _Contents.AddRange(Directory.EnumerateFiles(txtContentDirectory.Text, "*", opt));
                     dirCount = Directory.EnumerateDirectories(txtContentDirectory.Text, "*", opt).Count();
+                    UpdateContentDirStatus(txtContentDirectory.Text, dirCount + 1, _Contents.Count, CheckboxIncludeSubdirectories.Checked);
                 }
-                UpdateContentDirStatus(txtContentDirectory.Text, dirCount, _Contents.Count, CheckboxIncludeSubdirectories.Checked);
+                else
+                {
+                    UpdateContentDirStatus(txtContentDirectory.Text, 0, _Contents.Count, CheckboxIncludeSubdirectories.Checked);
+                }
                 ShowBusy(false);
             }
         }
@@ -157,8 +173,8 @@ namespace Naymidge
             else
             {
                 int subDirCount = subDirectoriesIncluded ? dirCount - 1 : 0;
-                string subPhrase = $"including {dirCount:N0} {(1 == subDirCount ? "subdirectory" : "subdirectories")}";
-                subPhrase = subDirectoriesIncluded ? subPhrase : "";
+                string subPhrase = $"including {subDirCount:N0} {(1 == subDirCount ? "subdirectory" : "subdirectories")}";
+                subPhrase = subDirectoriesIncluded && subDirCount > 0 ? subPhrase : "";
 
                 string filePhrase = 1 == fileCount ? "1 file" : $"{fileCount:N0} files";
                 string s =
@@ -286,7 +302,7 @@ namespace Naymidge
         }
         private void PositionLabels()
         {
-            IncludedFilesLabel.Left = IncludedFilesLabel.Left;
+            IncludedFilesLabel.Left = tvIncluded.Left;
             NotIncludedFilesLabel.Left = tvNotIncluded.Left;
         }
         private void PositionComponents()
