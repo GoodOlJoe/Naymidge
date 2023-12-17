@@ -15,10 +15,9 @@ namespace Naymidge
             NoFilters = 2,
             FiltersEstablished = 3,
         }
-        private readonly List<string> _Contents = new List<string>(1000);
-        private readonly Stack<Cursor> CursorStack = new Stack<Cursor>(); // for tracking busy cursor
-        private readonly ProcessingScope _Scope = new ProcessingScope();
-        //private readonly Settings _UserSettings = new Settings();
+        private readonly List<string> _Contents = new(1000);
+        private readonly Stack<Cursor> CursorStack = new(); // for tracking busy cursor
+        private readonly ProcessingScope _Scope = new();
 
         public GetParameters()
         {
@@ -107,7 +106,7 @@ namespace Naymidge
         //        DoRefreshSelection();
         //    }
         //}
-        private void DoRenameForm()
+        private static void DoRenameForm()
         {
             //if (!TrySelection()) return;
             //index_ = new PlaceIndex();
@@ -121,7 +120,7 @@ namespace Naymidge
             //    }
             //}
             //RenameUI frm = new RenameUI(index_, gedcom_);
-            RenameUI frm = new RenameUI();
+            RenameUI frm = new();
             frm.ShowDialog();
         }
         private void DoPickContentDirectory()
@@ -147,12 +146,11 @@ namespace Naymidge
             if (!string.IsNullOrEmpty(txtContentDirectory.Text))
             {
                 ShowBusy(true);
-                int dirCount = 0;
                 if (Directory.Exists(txtContentDirectory.Text))
                 {
                     SearchOption opt = CheckboxIncludeSubdirectories.Checked ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
                     _Contents.AddRange(Directory.EnumerateFiles(txtContentDirectory.Text, "*", opt));
-                    dirCount = Directory.EnumerateDirectories(txtContentDirectory.Text, "*", opt).Count();
+                    int dirCount = Directory.EnumerateDirectories(txtContentDirectory.Text, "*", opt).Count();
                     UpdateContentDirStatus(txtContentDirectory.Text, dirCount + 1, _Contents.Count, CheckboxIncludeSubdirectories.Checked);
                 }
                 else
@@ -197,7 +195,7 @@ namespace Naymidge
             if (0 == _Contents.Count || !UpdateScope()) return false;
             _Scope.Reset();
 
-            char[] delims = new char[] { '\r', '\n' };
+            char[] delims = ['\r', '\n'];
             _Scope.Patterns.AddRange(txtPatterns.Text.Split(delims, StringSplitOptions.RemoveEmptyEntries));
 
             tvIncluded.Nodes.Clear();
@@ -226,7 +224,7 @@ namespace Naymidge
             tvNotIncluded.Enabled = true;
             return true;
         }
-        private void AddToTreeView(TreeView tv, string FQN)
+        private static void AddToTreeView(TreeView tv, string FQN)
         {
             TreeNodeCollection nodes = tv.Nodes;
             string fn = Path.GetFileName(FQN);
@@ -241,8 +239,7 @@ namespace Naymidge
             //    nodes = node.Nodes;
             //}
 
-            TreeNode node = new TreeNode(fn);
-            node.ToolTipText = FQN;
+            TreeNode node = new(fn) { ToolTipText = FQN };
             nodes.Add(node);
         }
         private void ShowBusy(bool busy)

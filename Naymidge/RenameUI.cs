@@ -12,7 +12,6 @@ namespace Naymidge
         {
             Engine.Start(new EngineConfig()
             {
-                //FFmpegPath = @"C:\Flyleaf\FFmpeg",
                 FFmpegPath = ":FFmpeg",
                 FFmpegDevices = false,    // Prevents loading avdevice/avfilter dll files. Enable it only if you plan to use dshow/gdigrab etc.
                 //PluginsPath = ":Plugins",
@@ -29,8 +28,6 @@ namespace Naymidge
                 //LogOutput         = @"C:\Flyleaf\Logs\flyleaf.log",                
 #endif
 
-                //PluginsPath       = @"C:\Flyleaf\Plugins",
-
                 UIRefresh = false,    // Required for Activity, BufferedDuration, Stats in combination with Config.Player.Stats = true
                 UIRefreshInterval = 250,      // How often (in ms) to notify the UI
                 UICurTimePerSecond = true,     // Whether to notify UI for CurTime only when it's second changed or by UIRefreshInterval
@@ -41,8 +38,25 @@ namespace Naymidge
 
             Player = new Player(Config);
             InitializeComponent();
-            flyleafHost.Player = Player;
+            flyleafHostMain.Player = Player;
 
         }
+        private void RenameUI_Load(object sender, EventArgs e)
+        {
+            DoLayout();
+        }
+
+        private void RenameUI_Resize(object sender, EventArgs e) { DoLayout(); }
+        private void DoLayout()
+        {
+            OuterContainer.Height = ClientRectangle.Height - UpperPanel.Height - LowerPanel.Height;
+            OuterContainer.Left = 0;
+            OuterContainer.Top = UpperPanel.Height;
+            OuterContainer.Width = ClientRectangle.Width;
+
+            flyleafHostPrev.Width = (int)(InnerContainer.Panel2.ClientRectangle.Width * .4);
+            flyleafHostNext.Width = flyleafHostPrev.Width;
+        }
+
     }
 }

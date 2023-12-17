@@ -1,0 +1,16 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Naymidge.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="MruContentDirectory" Type="System.String" Scope="User">
+      <Value Profile="(Default)">{MRU content directory)</Value>
+    </Setting>
+    <Setting Name="MruFilenamePatterns" Type="System.String" Scope="User">
+      <Value Profile="(Default)">jpg$
+mov$</Value>
+    </Setting>
+    <Setting Name="MruIncludeSubdirectories" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
