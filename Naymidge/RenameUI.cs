@@ -39,7 +39,9 @@ namespace Naymidge
 
             PlayerMain = new Player(Config);
             PlayerPrev = new Player();
+            PlayerPrev.Audio.Volume = 0;
             PlayerNext = new Player();
+            PlayerNext.Audio.Volume = 0;
             InitializeComponent();
 
             // Parse the control to the Player
