@@ -45,23 +45,10 @@ namespace Naymidge
         {
             string contentDirName = txtContentDirectory.Text.Trim();
             if (string.IsNullOrEmpty(contentDirName)) { return false; }
-
-            //GcIndividual rootInd = gedcom_.Individuals.Values.Where(ind => ind.Name.FullName.Equals(contentDirName, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
-            //if (null == rootInd) { return false; }
-
-            //_Scope.StartRef = rootInd.Key;
-            //_Scope.RootIndName = rootInd.FullName;
-            //_Scope.RootSpouses = CheckboxIncludeSubdirectories.Checked;
-
-            //string genStr = txtGensAnc.Text.Trim();
-            //if (!int.TryParse(genStr, out int maxAncGens)) { return false; }
-            //_Scope.AncestorGenerations = maxAncGens;
-
-            //genStr = txtGensDesc.Text.Trim();
-            //if (!int.TryParse(genStr, out int maxDescGens)) { return false; }
-            //_Scope.DescendantGenerations = maxDescGens;
-            //_Scope.DescSpouses = CheckboxDescendantSpouse.Checked;
-
+            //_Scope.Contents.Clear();
+            //foreach (TreeNode node in tvIncluded.Nodes)
+            //    if (node.ToolTipText is string fqn)
+            //        _Scope.Contents.Add(fqn);
             return true;
         }
         private void CmdClose_Click(object sender, EventArgs e) { Application.Exit(); }
@@ -106,21 +93,10 @@ namespace Naymidge
         //        DoRefreshSelection();
         //    }
         //}
-        private static void DoRenameForm()
+        private void DoRenameForm()
         {
-            //if (!TrySelection()) return;
-            //index_ = new PlaceIndex();
-            //foreach (GcIndividual ind in _Scope.Contents)
-            //{
-            //    foreach (GcDatePlaceEvent ev in ind.Events.
-            //        Where(ev => null != ev.When && !string.IsNullOrEmpty(ev.Place)).
-            //        OrderBy(ev => ev.When.TimelineDate))
-            //    {
-            //        index_.Add(ev);
-            //    }
-            //}
-            //RenameUI frm = new RenameUI(index_, gedcom_);
-            RenameUI frm = new();
+            if (!TrySelection()) return;
+            RenameUI frm = new(_Scope);
             frm.ShowDialog();
         }
         private void DoPickContentDirectory()
@@ -211,12 +187,12 @@ namespace Naymidge
                 }
                 if (matched)
                 {
-                    AddToTreeView(tvIncluded, fn);
-                    _Scope.Contents.Add(fn);
+                    AddToTreeView(tvIncluded, s);
+                    _Scope.Contents.Add(s);
                 }
                 else
                 {
-                    AddToTreeView(tvNotIncluded, fn);
+                    AddToTreeView(tvNotIncluded, s);
                 }
 
             }
