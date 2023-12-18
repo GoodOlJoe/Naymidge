@@ -38,6 +38,7 @@
             PicboxBack = new PictureBox();
             tvRecent = new TreeView();
             LowerPanel = new Panel();
+            ProgressLabel = new Label();
             cmdClose = new Button();
             txtNameInput = new TextBox();
             UpperPanel.SuspendLayout();
@@ -152,7 +153,7 @@
             BackDetailsLabel.AutoSize = true;
             BackDetailsLabel.BackColor = Color.Transparent;
             BackDetailsLabel.Font = new Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            BackDetailsLabel.Location = new Point(299, 40);
+            BackDetailsLabel.Location = new Point(299, 32);
             BackDetailsLabel.Margin = new Padding(0);
             BackDetailsLabel.Name = "BackDetailsLabel";
             BackDetailsLabel.Size = new Size(74, 13);
@@ -193,6 +194,7 @@
             // LowerPanel
             // 
             LowerPanel.BackColor = Color.Khaki;
+            LowerPanel.Controls.Add(ProgressLabel);
             LowerPanel.Controls.Add(cmdClose);
             LowerPanel.Controls.Add(txtNameInput);
             LowerPanel.Dock = DockStyle.Bottom;
@@ -201,6 +203,17 @@
             LowerPanel.Name = "LowerPanel";
             LowerPanel.Size = new Size(1047, 67);
             LowerPanel.TabIndex = 6;
+            // 
+            // ProgressLabel
+            // 
+            ProgressLabel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            ProgressLabel.AutoSize = true;
+            ProgressLabel.Location = new Point(835, 23);
+            ProgressLabel.Name = "ProgressLabel";
+            ProgressLabel.Size = new Size(80, 21);
+            ProgressLabel.TabIndex = 2;
+            ProgressLabel.Text = "{nnn/nnn}";
+            ProgressLabel.TextAlign = ContentAlignment.MiddleRight;
             // 
             // cmdClose
             // 
@@ -272,5 +285,6 @@
         private TreeView TvAllBacks;
         private PictureBox PicboxBack;
         private Label BackDetailsLabel;
+        private Label ProgressLabel;
     }
 }

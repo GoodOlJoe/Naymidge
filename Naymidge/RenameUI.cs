@@ -10,15 +10,16 @@ namespace Naymidge
     {
         public Player PlayerMain { get; set; }
         public Config Config { get; set; }
-        //private readonly ProcessingScope _Scope;
         private readonly List<FileInstruction> _Instructions;
         private int CurrentItem = 0;
+        private Label? KeyboardShortcutsHelp = null;
+
         public RenameUI(ProcessingScope scope)
         {
             // _Scope.Contents has the original files to be acted upon, as selected by the caller
             // _Instructions contains the decisions made by the user of this form: to delete or rename, etc.
             _Instructions = new List<FileInstruction>(scope.Contents.Count);
-            foreach(string fqn in scope.Contents)
+            foreach (string fqn in scope.Contents)
                 _Instructions.Add(new FileInstruction(fqn));
 
             CurrentItem = 0;
@@ -100,6 +101,8 @@ namespace Naymidge
         private void CmdClose_Click(object sender, EventArgs e) { DoCloseButtonClicked(); }
         private void InnerContainer_SplitterMoved(object sender, SplitterEventArgs e) { DoLayout(); }
         private void OuterContainer_SplitterMoved(object sender, SplitterEventArgs e) { DoLayout(); }
+        private void PicboxBack_SizeChanged(object sender, EventArgs e) { DoLayout(); }
+        private void RenameUI_KeyDown(object sender, KeyEventArgs e) { e.SuppressKeyPress = FormKeyDownHandled(e); }
         private void RenameUI_KeyUp(object sender, KeyEventArgs e) { e.SuppressKeyPress = FormKeyUpHandled(sender, e); }
         private void RenameUI_Load(object sender, EventArgs e) { DoLayout(); }
         private void RenameUI_Resize(object sender, EventArgs e) { DoLayout(); }
@@ -126,6 +129,8 @@ namespace Naymidge
                 {
                     case Keys.E: txtNameInput.Focus(); return true; // ctrl e - focus on name input field
                     case Keys.B: TvAllBacks.Focus(); return true;   // ctrl b - focus on back image names
+                    case Keys.Left: CurrentItem = DecCurrent; SetUiToItem(CurrentItem); return true;
+                    case Keys.Right: CurrentItem = IncCurrent; SetUiToItem(CurrentItem); return true;
                 }
             }
 
@@ -133,20 +138,64 @@ namespace Naymidge
         }
         private bool InputKeyUpHandled(object sender, KeyEventArgs e)
         {
-            if (!(e.Control && e.Shift && e.Alt))
+            bool changingItems = false;
+            if (!(e.Control || e.Shift || e.Alt))
             {
                 switch (e.KeyCode)
                 {
-                    // ctrl e - focus on name input field
                     case Keys.Enter:
-                        CurrentItem++;
-                        txtNameInput.Clear();
-                        UpdateDisplays();
-                        return true;
+                        string newName = txtNameInput.Text.Trim();
+                        if (!string.IsNullOrEmpty(newName) && !newName.Equals(DeleteNotice))
+                        {
+                            _Instructions[CurrentItem].Rename(txtNameInput.Text.Trim());
+                        }
+                        CurrentItem = IncCurrent;
+                        changingItems = true;
+                        break;
                 }
+            }
+            else if (e.Control)
+            {
+                switch (e.KeyCode)
+                {
+                    case Keys.D:
+                        _Instructions[CurrentItem].Delete();
+                        CurrentItem = IncCurrent;
+                        changingItems = true;
+                        break;
+                }
+            }
+            if (changingItems)
+            {
+                SetUiToItem(CurrentItem);
+                return true;
             }
             return false;
         }
+        private const string DeleteNotice = "(marked for deletion)";
+        private int DecCurrent => CurrentItem == 0 ? _Instructions.Count - 1 : --CurrentItem;
+        private int IncCurrent => CurrentItem >= _Instructions.Count - 1 ? 0 : ++CurrentItem;
+        private void SetUiToItem(int itemNdx)
+        {
+            switch (_Instructions[itemNdx].Verb)
+            {
+                case FileInstructionVerb.Rename:
+                    string? newName = _Instructions[itemNdx].NewFileName;
+                    newName = string.IsNullOrEmpty(newName) ? "" : newName;
+                    txtNameInput.Text = newName;
+                    break;
+                case FileInstructionVerb.Delete:
+                    txtNameInput.Text = DeleteNotice;
+                    break;
+                default:
+                    txtNameInput.Clear();
+                    break;
+            }
+            UpdateProgressLabel();
+            UpdateDisplays();
+        }
+        //private void CreateRenameInstruction(int item, string newName) { _Instructions[item].Rename(newName); }
+        //private void CreateDeleteInstruction(int item) { _Instructions[item].Delete(); }
         private void DoBackImageSelectionChanged(TreeViewEventArgs e) { if (e.Node?.Tag is string FQN) DisplayBackImage(FQN); }
         private void DisplayBackImage(string FQN)
         {
@@ -178,13 +227,6 @@ namespace Naymidge
                 c.Location = c.Parent.PointToClient(cLocation); // place on Parent
         }
         private void SetBackDetailsLabelPosition() { DockUpperRight(BackDetailsLabel, PicboxBack); }
-        private void PicboxBack_SizeChanged(object sender, EventArgs e) { DoLayout(); }
-
-        private void RenameUI_KeyDown(object sender, KeyEventArgs e)
-        {
-            e.SuppressKeyPress = FormKeyDownHandled(e);
-        }
-        Label? KeyboardShortcutsHelp = null;
         private void KeyboardShortcuts(bool visible)
         {
             Control p = tvRecent; // UpperPanel; // parent
@@ -227,6 +269,13 @@ namespace Naymidge
         {
             if (e.Control) KeyboardShortcuts(visible: true);
             return false;
+        }
+        private void UpdateProgressLabel()
+        {
+            ProgressLabel.Text = "";
+            if (_Instructions == null || _Instructions.Count == 0) return;
+            int undetermined = _Instructions.Where(inst => inst.Verb == FileInstructionVerb.Undetermined).Count();
+            ProgressLabel.Text = $"{_Instructions.Count - undetermined:N0}/{_Instructions.Count:N0}";
         }
     }
 }
