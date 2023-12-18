@@ -2,7 +2,9 @@ using FlyleafLib;
 using FlyleafLib.Controls.WinForms;
 using FlyleafLib.MediaPlayer;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Text.RegularExpressions;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Naymidge
 {
@@ -101,7 +103,7 @@ namespace Naymidge
         private void CmdClose_Click(object sender, EventArgs e) { DoCloseButtonClicked(); }
         private void InnerContainer_SplitterMoved(object sender, SplitterEventArgs e) { DoLayout(); }
         private void OuterContainer_SplitterMoved(object sender, SplitterEventArgs e) { DoLayout(); }
-        private void PicboxBack_SizeChanged(object sender, EventArgs e) { DoLayout(); }
+        //private void PicboxBack_SizeChanged(object sender, EventArgs e) { DoLayout(); }
         private void RenameUI_KeyDown(object sender, KeyEventArgs e) { e.SuppressKeyPress = FormKeyDownHandled(e); }
         private void RenameUI_KeyUp(object sender, KeyEventArgs e) { e.SuppressKeyPress = FormKeyUpHandled(sender, e); }
         private void RenameUI_Load(object sender, EventArgs e) { DoLayout(); }
@@ -112,13 +114,14 @@ namespace Naymidge
         private void DoCloseButtonClicked() { Close(); }
         private void DoLayout()
         {
-            OuterContainer.Height = ClientRectangle.Height - UpperPanel.Height - LowerPanel.Height;
-            OuterContainer.Left = 0;
-            OuterContainer.Top = UpperPanel.Height;
-            OuterContainer.Width = ClientRectangle.Width;
+            MiddlePanel.Height = ClientRectangle.Height - UpperPanel.Height - LowerPanel.Height;
+            MiddlePanel.Left = 0;
+            MiddlePanel.Top = UpperPanel.Height;
+            MiddlePanel.Width = ClientRectangle.Width;
 
             SetBackImagePosition();
             SetBackDetailsLabelPosition();
+            UpdateProgressLabel();
         }
         private bool FormKeyUpHandled(object sender, KeyEventArgs e)
         {
@@ -147,7 +150,8 @@ namespace Naymidge
                         string newName = txtNameInput.Text.Trim();
                         if (!string.IsNullOrEmpty(newName) && !newName.Equals(DeleteNotice))
                         {
-                            _Instructions[CurrentItem].Rename(txtNameInput.Text.Trim());
+                            _Instructions[CurrentItem].Rename(newName);
+                            AddRecentEntry(newName);
                         }
                         CurrentItem = IncCurrent;
                         changingItems = true;
@@ -226,17 +230,20 @@ namespace Naymidge
             else
                 c.Location = c.Parent.PointToClient(cLocation); // place on Parent
         }
-        private void SetBackDetailsLabelPosition() { DockUpperRight(BackDetailsLabel, PicboxBack); }
+        private void SetBackDetailsLabelPosition()
+        {
+            DockUpperRight(BackDetailsLabel, PicboxBack);
+        }
         private void KeyboardShortcuts(bool visible)
         {
-            Control p = tvRecent; // UpperPanel; // parent
+            Control p = TxtRecent; // UpperPanel; // parent
             if (visible)
             {
                 if (null == KeyboardShortcutsHelp)
                 {
                     KeyboardShortcutsHelp = new()
                     {
-                        Font = new Font(new FontFamily(System.Drawing.Text.GenericFontFamilies.Monospace), Font.Size),
+                        Font = new System.Drawing.Font(new FontFamily(System.Drawing.Text.GenericFontFamilies.Monospace), Font.Size),
                         BackColor = Color.AntiqueWhite,
                         Text = @"
   Keyboard Shortcuts
@@ -276,6 +283,37 @@ namespace Naymidge
             if (_Instructions == null || _Instructions.Count == 0) return;
             int undetermined = _Instructions.Where(inst => inst.Verb == FileInstructionVerb.Undetermined).Count();
             ProgressLabel.Text = $"{_Instructions.Count - undetermined:N0}/{_Instructions.Count:N0}";
+        }
+        private string? GetNumberedRecentEntry(string entryNumber)
+        {
+            char[] delims = ['\r', '\n'];
+            string[] lines = TxtRecent.Text.Split(delims, StringSplitOptions.RemoveEmptyEntries);
+            string? match = lines.Where(s => s.Trim().StartsWith($"{entryNumber} ")).FirstOrDefault();
+            if (match == null)
+                return null;
+            else
+                return match.Trim()[(match.IndexOf(' ') + 1)..];
+        }
+        private void AddRecentEntry(string entry)
+        {
+            char[] delims = ['\r', '\n'];
+            string[] lines = TxtRecent.Text.Split(delims, StringSplitOptions.RemoveEmptyEntries);
+            List<string> unnumberedEntries = new(lines.Length + 1);
+            foreach (string l in lines)
+            {
+                string s = l.Trim();
+                s = s[(s.IndexOf(' ') + 1)..];
+                if (!s.ToLower().Equals(entry.ToLower()))
+                    unnumberedEntries.Add(s);
+            }
+
+            StringBuilder numberedEntries = new(unnumberedEntries.Count + 1);
+            int i = unnumberedEntries.Count + 1;
+            foreach (string s in unnumberedEntries)
+                numberedEntries.AppendLine($"{i--,4:D} {s}");
+            numberedEntries.AppendLine($"{1,4:D} {entry}");
+
+            TxtRecent.Text = numberedEntries.ToString();
         }
     }
 }

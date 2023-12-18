@@ -204,17 +204,6 @@ namespace Naymidge
         {
             TreeNodeCollection nodes = tv.Nodes;
             string fn = Path.GetFileName(FQN);
-
-            //foreach (string s in FQN.Split(Path.DirectorySeparatorChar))
-            //{
-            //    TreeNode node;
-            //    if (nodes.ContainsKey(s))
-            //        node = nodes[s];
-            //    else
-            //        node = nodes[nodes.Add(new TreeNode(s))];
-            //    nodes = node.Nodes;
-            //}
-
             TreeNode node = new(fn) { ToolTipText = FQN };
             nodes.Add(node);
         }
