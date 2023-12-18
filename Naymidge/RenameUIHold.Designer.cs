@@ -1,6 +1,6 @@
 ﻿namespace Naymidge
 {
-    partial class RenameUI
+    partial class RenameUIHold
     {
         /// <summary>
         ///  Required designer variable.
@@ -33,9 +33,8 @@
             OuterContainer = new SplitContainer();
             InnerContainer = new SplitContainer();
             flyleafHostMain = new FlyleafLib.Controls.WinForms.FlyleafHost();
-            BackDetailsLabel = new Label();
-            TvAllBacks = new TreeView();
-            PicboxBack = new PictureBox();
+            flyleafHostNext = new FlyleafLib.Controls.WinForms.FlyleafHost();
+            flyleafHostPrev = new FlyleafLib.Controls.WinForms.FlyleafHost();
             tvRecent = new TreeView();
             LowerPanel = new Panel();
             cmdClose = new Button();
@@ -49,7 +48,6 @@
             InnerContainer.Panel1.SuspendLayout();
             InnerContainer.Panel2.SuspendLayout();
             InnerContainer.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)PicboxBack).BeginInit();
             LowerPanel.SuspendLayout();
             SuspendLayout();
             // 
@@ -68,7 +66,7 @@
             // 
             MediaDetailsLabel.AutoSize = true;
             MediaDetailsLabel.BackColor = Color.MistyRose;
-            MediaDetailsLabel.Dock = DockStyle.Left;
+            MediaDetailsLabel.Dock = DockStyle.Fill;
             MediaDetailsLabel.Location = new Point(0, 0);
             MediaDetailsLabel.Margin = new Padding(0);
             MediaDetailsLabel.Name = "MediaDetailsLabel";
@@ -79,7 +77,6 @@
             // OuterContainer
             // 
             OuterContainer.Anchor = AnchorStyles.None;
-            OuterContainer.BackColor = Color.FromArgb(240, 152, 32);
             OuterContainer.BorderStyle = BorderStyle.FixedSingle;
             OuterContainer.Location = new Point(0, 144);
             OuterContainer.Margin = new Padding(4);
@@ -91,13 +88,11 @@
             // 
             // OuterContainer.Panel2
             // 
-            OuterContainer.Panel2.BackColor = Color.Pink;
             OuterContainer.Panel2.Controls.Add(tvRecent);
             OuterContainer.Size = new Size(980, 329);
             OuterContainer.SplitterDistance = 722;
             OuterContainer.SplitterWidth = 5;
             OuterContainer.TabIndex = 5;
-            OuterContainer.SplitterMoved += OuterContainer_SplitterMoved;
             // 
             // InnerContainer
             // 
@@ -114,15 +109,12 @@
             // 
             // InnerContainer.Panel2
             // 
-            InnerContainer.Panel2.BackColor = Color.FromArgb(128, 128, 255);
-            InnerContainer.Panel2.Controls.Add(BackDetailsLabel);
-            InnerContainer.Panel2.Controls.Add(TvAllBacks);
-            InnerContainer.Panel2.Controls.Add(PicboxBack);
+            InnerContainer.Panel2.Controls.Add(flyleafHostNext);
+            InnerContainer.Panel2.Controls.Add(flyleafHostPrev);
             InnerContainer.Size = new Size(722, 329);
             InnerContainer.SplitterDistance = 218;
             InnerContainer.SplitterWidth = 6;
             InnerContainer.TabIndex = 0;
-            InnerContainer.SplitterMoved += InnerContainer_SplitterMoved;
             // 
             // flyleafHostMain
             // 
@@ -146,40 +138,49 @@
             flyleafHostMain.TabIndex = 1;
             flyleafHostMain.ToggleFullScreenOnDoubleClick = true;
             // 
-            // BackDetailsLabel
+            // flyleafHostNext
             // 
-            BackDetailsLabel.Anchor = AnchorStyles.None;
-            BackDetailsLabel.AutoSize = true;
-            BackDetailsLabel.BackColor = Color.Transparent;
-            BackDetailsLabel.Font = new Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            BackDetailsLabel.Location = new Point(299, 40);
-            BackDetailsLabel.Margin = new Padding(0);
-            BackDetailsLabel.Name = "BackDetailsLabel";
-            BackDetailsLabel.Size = new Size(74, 13);
-            BackDetailsLabel.TabIndex = 2;
-            BackDetailsLabel.Text = "{back details}";
-            BackDetailsLabel.TextChanged += BackDetailsLabel_TextChanged;
+            flyleafHostNext.AllowDrop = true;
+            flyleafHostNext.BackColor = Color.Black;
+            flyleafHostNext.Dock = DockStyle.Right;
+            flyleafHostNext.DragMove = true;
+            flyleafHostNext.IsFullScreen = false;
+            flyleafHostNext.KeyBindings = true;
+            flyleafHostNext.Location = new Point(584, 0);
+            flyleafHostNext.Margin = new Padding(4);
+            flyleafHostNext.Name = "flyleafHostNext";
+            flyleafHostNext.OpenOnDrop = false;
+            flyleafHostNext.PanMoveOnCtrl = true;
+            flyleafHostNext.PanRotateOnShiftWheel = true;
+            flyleafHostNext.PanZoomOnCtrlWheel = true;
+            flyleafHostNext.Player = null;
+            flyleafHostNext.Size = new Size(136, 103);
+            flyleafHostNext.SwapDragEnterOnShift = true;
+            flyleafHostNext.SwapOnDrop = true;
+            flyleafHostNext.TabIndex = 1;
+            flyleafHostNext.ToggleFullScreenOnDoubleClick = true;
             // 
-            // TvAllBacks
+            // flyleafHostPrev
             // 
-            TvAllBacks.Dock = DockStyle.Left;
-            TvAllBacks.Location = new Point(0, 0);
-            TvAllBacks.Name = "TvAllBacks";
-            TvAllBacks.ShowNodeToolTips = true;
-            TvAllBacks.Size = new Size(287, 103);
-            TvAllBacks.TabIndex = 1;
-            TvAllBacks.AfterSelect += TvAllBacks_AfterSelect;
-            // 
-            // PicboxBack
-            // 
-            PicboxBack.Dock = DockStyle.Right;
-            PicboxBack.Location = new Point(387, 0);
-            PicboxBack.Name = "PicboxBack";
-            PicboxBack.Size = new Size(333, 103);
-            PicboxBack.SizeMode = PictureBoxSizeMode.Zoom;
-            PicboxBack.TabIndex = 0;
-            PicboxBack.TabStop = false;
-            PicboxBack.SizeChanged += PicboxBack_SizeChanged;
+            flyleafHostPrev.AllowDrop = true;
+            flyleafHostPrev.BackColor = Color.Black;
+            flyleafHostPrev.Dock = DockStyle.Left;
+            flyleafHostPrev.DragMove = true;
+            flyleafHostPrev.IsFullScreen = false;
+            flyleafHostPrev.KeyBindings = true;
+            flyleafHostPrev.Location = new Point(0, 0);
+            flyleafHostPrev.Margin = new Padding(4);
+            flyleafHostPrev.Name = "flyleafHostPrev";
+            flyleafHostPrev.OpenOnDrop = false;
+            flyleafHostPrev.PanMoveOnCtrl = true;
+            flyleafHostPrev.PanRotateOnShiftWheel = true;
+            flyleafHostPrev.PanZoomOnCtrlWheel = true;
+            flyleafHostPrev.Player = null;
+            flyleafHostPrev.Size = new Size(131, 103);
+            flyleafHostPrev.SwapDragEnterOnShift = true;
+            flyleafHostPrev.SwapOnDrop = true;
+            flyleafHostPrev.TabIndex = 0;
+            flyleafHostPrev.ToggleFullScreenOnDoubleClick = true;
             // 
             // tvRecent
             // 
@@ -223,11 +224,10 @@
             txtNameInput.TabIndex = 0;
             txtNameInput.KeyUp += TxtNameInput_KeyUp;
             // 
-            // RenameUI
+            // RenameUIHold
             // 
             AutoScaleDimensions = new SizeF(9F, 21F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = Color.Fuchsia;
             ClientSize = new Size(1047, 621);
             Controls.Add(UpperPanel);
             Controls.Add(OuterContainer);
@@ -235,10 +235,9 @@
             Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             KeyPreview = true;
             Margin = new Padding(4);
-            Name = "RenameUI";
+            Name = "RenameUIHold";
             Text = "Rename";
             Load += RenameUI_Load;
-            KeyDown += RenameUI_KeyDown;
             KeyUp += RenameUI_KeyUp;
             Resize += RenameUI_Resize;
             UpperPanel.ResumeLayout(false);
@@ -249,10 +248,8 @@
             OuterContainer.ResumeLayout(false);
             InnerContainer.Panel1.ResumeLayout(false);
             InnerContainer.Panel2.ResumeLayout(false);
-            InnerContainer.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)InnerContainer).EndInit();
             InnerContainer.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)PicboxBack).EndInit();
             LowerPanel.ResumeLayout(false);
             LowerPanel.PerformLayout();
             ResumeLayout(false);
@@ -265,12 +262,11 @@
         private SplitContainer InnerContainer;
         private FlyleafLib.Controls.WinForms.FlyleafHost flyleafHostMain;
         private Panel LowerPanel;
+        private FlyleafLib.Controls.WinForms.FlyleafHost flyleafHostNext;
+        private FlyleafLib.Controls.WinForms.FlyleafHost flyleafHostPrev;
         private TreeView tvRecent;
         private Label MediaDetailsLabel;
         private Button cmdClose;
         private TextBox txtNameInput;
-        private TreeView TvAllBacks;
-        private PictureBox PicboxBack;
-        private Label BackDetailsLabel;
     }
 }
