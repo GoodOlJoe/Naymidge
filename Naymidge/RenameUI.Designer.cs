@@ -31,6 +31,7 @@
             UpperPanel = new Panel();
             MediaDetailsLabel = new Label();
             LowerPanel = new Panel();
+            CboNameInput = new ComboBox();
             ProgressLabel = new Label();
             cmdClose = new Button();
             txtNameInput = new TextBox();
@@ -82,6 +83,7 @@
             // LowerPanel
             // 
             LowerPanel.BackColor = Color.Khaki;
+            LowerPanel.Controls.Add(CboNameInput);
             LowerPanel.Controls.Add(ProgressLabel);
             LowerPanel.Controls.Add(cmdClose);
             LowerPanel.Controls.Add(txtNameInput);
@@ -91,6 +93,17 @@
             LowerPanel.Name = "LowerPanel";
             LowerPanel.Size = new Size(1047, 67);
             LowerPanel.TabIndex = 6;
+            // 
+            // CboNameInput
+            // 
+            CboNameInput.Font = new Font("Segoe UI", 18F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            CboNameInput.FormattingEnabled = true;
+            CboNameInput.Location = new Point(12, 15);
+            CboNameInput.Name = "CboNameInput";
+            CboNameInput.Size = new Size(691, 40);
+            CboNameInput.TabIndex = 3;
+            CboNameInput.SelectedIndexChanged += CboNameInput_SelectedIndexChanged;
+            CboNameInput.KeyUp += CboNameInput_KeyUp;
             // 
             // ProgressLabel
             // 
@@ -117,12 +130,14 @@
             // txtNameInput
             // 
             txtNameInput.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            txtNameInput.Enabled = false;
             txtNameInput.Font = new Font("Segoe UI", 21.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
             txtNameInput.Location = new Point(7, 9);
             txtNameInput.Name = "txtNameInput";
             txtNameInput.Size = new Size(709, 46);
             txtNameInput.TabIndex = 0;
-            txtNameInput.KeyUp += TxtNameInput_KeyUp;
+            txtNameInput.Visible = false;
+            txtNameInput.KeyUp += NameInput_KeyUp;
             // 
             // MiddlePanel
             // 
@@ -207,7 +222,7 @@
             BackDetailsLabel.AutoSize = true;
             BackDetailsLabel.BackColor = Color.Transparent;
             BackDetailsLabel.Font = new Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            BackDetailsLabel.Location = new Point(603, 68);
+            BackDetailsLabel.Location = new Point(603, 61);
             BackDetailsLabel.Margin = new Padding(0);
             BackDetailsLabel.Name = "BackDetailsLabel";
             BackDetailsLabel.Size = new Size(74, 13);
@@ -297,5 +312,6 @@
         private TreeView TvAllBacks;
         private PictureBox PicboxBack;
         private TextBox TxtRecent;
+        private ComboBox CboNameInput;
     }
 }

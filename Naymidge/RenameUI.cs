@@ -1,6 +1,8 @@
 using FlyleafLib;
 using FlyleafLib.Controls.WinForms;
 using FlyleafLib.MediaPlayer;
+using System.Data;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -15,7 +17,8 @@ namespace Naymidge
         private readonly List<FileInstruction> _Instructions;
         private int CurrentItem = 0;
         private Label? KeyboardShortcutsHelp = null;
-        private AutoCompleteStringCollection AutoCompleteTerms = new AutoCompleteStringCollection();
+        private AutoCompleteStringCollection AllAutoCompleteTerms = new AutoCompleteStringCollection();
+        private List<string> AllAcTermsList = new(1000);
         private Regex AutoCompleteParsePattern = new Regex(@"[A-Za-z]{3,}", RegexOptions.Compiled | RegexOptions.NonBacktracking);
 
         public RenameUI(ProcessingScope scope)
@@ -48,7 +51,7 @@ namespace Naymidge
             InitializeComponent();
             flyleafHostMain.Player = PlayerMain;
 
-            txtNameInput.AutoCompleteCustomSource = AutoCompleteTerms;
+            txtNameInput.AutoCompleteCustomSource = AllAutoCompleteTerms;
             txtNameInput.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
             txtNameInput.AutoCompleteSource = AutoCompleteSource.CustomSource;
 
@@ -116,7 +119,7 @@ namespace Naymidge
         private void RenameUI_Load(object sender, EventArgs e) { DoLayout(); }
         private void RenameUI_Resize(object sender, EventArgs e) { DoLayout(); }
         private void TvAllBacks_AfterSelect(object sender, TreeViewEventArgs e) { DoBackImageSelectionChanged(e); }
-        private void TxtNameInput_KeyUp(object sender, KeyEventArgs e) { e.SuppressKeyPress = InputKeyUpHandled(sender, e); }
+        private void NameInput_KeyUp(object sender, KeyEventArgs e) { e.SuppressKeyPress = InputKeyUpHandled(sender, e); }
 
         private void DoCloseButtonClicked() { Close(); }
         private void DoLayout()
@@ -310,7 +313,13 @@ namespace Naymidge
         private void AddRecentEntryToAutoComplete(string entry)
         {
             foreach (Match m in AutoCompleteParsePattern.Matches(entry).Where(m => !AutoCompleteNoiseWords.Contains(m.Value)))
-                AutoCompleteTerms.Add(m.Value);
+            {
+                AllAutoCompleteTerms.Add(m.Value);
+                if (!AllAcTermsList.Contains(m.Value))
+                {
+                    AllAcTermsList.Add(m.Value);
+                }
+            }
         }
         private void AddRecentEntryToHistory(string entry)
         {
@@ -332,6 +341,43 @@ namespace Naymidge
             numberedEntries.AppendLine($"{1,4:D} {entry}");
 
             TxtRecent.Text = numberedEntries.ToString();
+        }
+
+        private void CboNameInput_KeyUp(object sender, KeyEventArgs e) { DoNameInputAutoComplete(e); }
+        private void DoNameInputAutoComplete(KeyEventArgs e)
+        {
+            //use keyUp event, as text changed traps too many other evengts.
+
+            string sBoxText = CboNameInput.Text;
+            AutoCompleteStringCollection filteredTerms = [.. AllAcTermsList.Where(s => s.Contains(sBoxText))];
+            //AutoCompleteStringCollection filteredTerms = new();
+            //foreach (string matchingTerm in AllAcTermsList.Where(s => s.Contains(sBoxText)))
+            //{
+            //    filteredTerms.Add(matchingTerm);
+            //}
+
+
+            ////NOW THAT WE HAVE OUR FILTERED LIST, WE NEED TO RE-BIND IT WIHOUT CHANGING THE TEXT IN THE cbox
+            ////1).UNREGISTER THE SELECTED EVENT BEFORE RE-BINDING, b/c IT TRIGGERS ON BIND.
+            //CboNameInput.SelectedIndexChanged -= CboNameInput_SelectedIndexChanged; //don't select on typing.
+            //CboNameInput.DataSource = filteredTerms; //2).rebind to filtered list.
+            //CboNameInput.SelectedIndexChanged += CboNameInput_SelectedIndexChanged;
+
+            ////3).show the user the new filtered list.
+            //CboNameInput.DroppedDown = true; //this will overwrite the text in the ComboBox, so 4&5 put it back.
+
+            ////4).binding data source erases text, so now we need to put the user's text back,
+            //CboNameInput.Text = sBoxText;
+            //CboNameInput.SelectionStart = sBoxText.Length; //5). need to put the user's cursor back where it was.
+        }
+
+        private void CboNameInput_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (CboNameInput.SelectedValue != null)
+            {
+                Debug.WriteLine(string.Format(@"Item #{0} was selected.", CboNameInput.SelectedValue));
+            }
+
         }
     }
 }
