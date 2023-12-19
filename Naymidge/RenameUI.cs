@@ -15,6 +15,8 @@ namespace Naymidge
         private readonly List<FileInstruction> _Instructions;
         private int CurrentItem = 0;
         private Label? KeyboardShortcutsHelp = null;
+        private AutoCompleteStringCollection AutoCompleteTerms = new AutoCompleteStringCollection();
+        private Regex AutoCompleteParsePattern = new Regex(@"[A-Za-z]{3,}", RegexOptions.Compiled | RegexOptions.NonBacktracking);
 
         public RenameUI(ProcessingScope scope)
         {
@@ -45,6 +47,11 @@ namespace Naymidge
             PlayerMain = new Player(Config);
             InitializeComponent();
             flyleafHostMain.Player = PlayerMain;
+
+            txtNameInput.AutoCompleteCustomSource = AutoCompleteTerms;
+            txtNameInput.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+            txtNameInput.AutoCompleteSource = AutoCompleteSource.CustomSource;
+
             UpdateDisplays();
             DoLayout();
         }
@@ -151,7 +158,7 @@ namespace Naymidge
                         if (!string.IsNullOrEmpty(newName) && !newName.Equals(DeleteNotice))
                         {
                             _Instructions[CurrentItem].Rename(newName);
-                            AddRecentEntry(newName);
+                            AddRecentEntryToUi(newName);
                         }
                         CurrentItem = IncCurrent;
                         changingItems = true;
@@ -294,7 +301,18 @@ namespace Naymidge
             else
                 return match.Trim()[(match.IndexOf(' ') + 1)..];
         }
-        private void AddRecentEntry(string entry)
+        private void AddRecentEntryToUi(string entry)
+        {
+            AddRecentEntryToAutoComplete(entry);
+            AddRecentEntryToHistory(entry);
+        }
+        private readonly List<string> AutoCompleteNoiseWords = ["and", "of", "the"];
+        private void AddRecentEntryToAutoComplete(string entry)
+        {
+            foreach (Match m in AutoCompleteParsePattern.Matches(entry).Where(m => !AutoCompleteNoiseWords.Contains(m.Value)))
+                AutoCompleteTerms.Add(m.Value);
+        }
+        private void AddRecentEntryToHistory(string entry)
         {
             char[] delims = ['\r', '\n'];
             string[] lines = TxtRecent.Text.Split(delims, StringSplitOptions.RemoveEmptyEntries);
