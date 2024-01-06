@@ -203,11 +203,11 @@
             LowerPanel.Size = new Size(1047, 67);
             LowerPanel.TabIndex = 6;
             // 
-            // cmdClose
+            // cmdCancel
             // 
             cmdClose.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             cmdClose.Location = new Point(921, 16);
-            cmdClose.Name = "cmdClose";
+            cmdClose.Name = "cmdCancel";
             cmdClose.Size = new Size(117, 35);
             cmdClose.TabIndex = 1;
             cmdClose.Text = "&Close";

@@ -3,6 +3,7 @@ using FlyleafLib.Controls.WinForms;
 using FlyleafLib.MediaPlayer;
 using System.Data;
 using System.Diagnostics;
+using System.Printing;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -98,7 +99,7 @@ namespace Naymidge
             }
             TvAllBacks.ExpandAll();
 
-            // now load the most likely back's image
+            // now load the most likely back'sLineKey image
             string exactBack = $"{match.Groups["prefix"].Value}2{match.Groups["serial"].Value}{ext}";
             DisplayBackImage(Path.Combine(dname, exactBack));
         }
@@ -110,7 +111,7 @@ namespace Naymidge
         }
 
         private void BackDetailsLabel_TextChanged(object sender, EventArgs e) { SetBackDetailsLabelPosition(); }
-        private void CmdClose_Click(object sender, EventArgs e) { DoCloseButtonClicked(); }
+        private void CmdCancel_Click(object sender, EventArgs e) { DoCancelButtonClicked(); }
         private void InnerContainer_SplitterMoved(object sender, SplitterEventArgs e) { DoLayout(); }
         private void OuterContainer_SplitterMoved(object sender, SplitterEventArgs e) { DoLayout(); }
         //private void PicboxBack_SizeChanged(object sender, EventArgs e) { DoLayout(); }
@@ -121,7 +122,7 @@ namespace Naymidge
         private void TvAllBacks_AfterSelect(object sender, TreeViewEventArgs e) { DoBackImageSelectionChanged(e); }
         private void NameInput_KeyUp(object sender, KeyEventArgs e) { e.SuppressKeyPress = InputKeyUpHandled(sender, e); }
 
-        private void DoCloseButtonClicked() { Close(); }
+        private void DoCancelButtonClicked() { Close(); }
         private void DoLayout()
         {
             MiddlePanel.Height = ClientRectangle.Height - UpperPanel.Height - LowerPanel.Height;
@@ -149,6 +150,7 @@ namespace Naymidge
 
             return false;
         }
+        private const string ReuseLastNameShortcut = "ÿ";
         private bool InputKeyUpHandled(object sender, KeyEventArgs e)
         {
             bool changingItems = false;
@@ -157,11 +159,26 @@ namespace Naymidge
                 switch (e.KeyCode)
                 {
                     case Keys.Enter:
-                        string newName = txtNameInput.Text.Trim();
-                        if (!string.IsNullOrEmpty(newName) && !newName.Equals(DeleteNotice))
+
+                        // special shortcut for reusing the most recent name is a space, saves them typing "1"
+                        string newName = txtNameInput.Text.Equals(" ") ? ReuseLastNameShortcut : txtNameInput.Text.Trim();
+
+                        if (!string.IsNullOrEmpty(newName))
                         {
-                            _Instructions[CurrentItem].Rename(newName);
-                            AddRecentEntryToUi(newName);
+                            newName = newName.Equals(ReuseLastNameShortcut) ? "1" : newName;
+
+                            // first see if they are resuing a numbered entry from the list
+                            if (int.TryParse(newName, out int reuseIndex))
+                            {
+                                string reusedName = GetNumberedEntryFromHistory(reuseIndex);
+                                newName = string.IsNullOrEmpty(reusedName) ? newName : reusedName;
+                            }
+
+                            if (!newName.Equals(DeleteNotice))
+                            {
+                                _Instructions[CurrentItem].Rename(newName);
+                                AddRecentEntryToUi(newName);
+                            }
                         }
                         CurrentItem = IncCurrent;
                         changingItems = true;
@@ -176,13 +193,13 @@ namespace Naymidge
                     //    break;
                     case Keys.Space:
                         break;
-                    //default:
-                    //    // if cursor is at end of text
-                    //    if (txtNameInput.SelectionStart == txtNameInput.Text.Length)
-                    //    {
-                    //        RefreshAutoCompleteTermsDisplay(txtNameInput.Text);
-                    //    }
-                    //    break;
+                        //default:
+                        //    // if cursor is at end of text
+                        //    if (txtNameInput.SelectionStart == txtNameInput.Text.Length)
+                        //    {
+                        //        RefreshAutoCompleteTermsDisplay(txtNameInput.Text);
+                        //    }
+                        //    break;
                 }
             }
             else if (e.Control)
@@ -370,7 +387,17 @@ namespace Naymidge
             ProgressLabel.Text = "";
             if (_Instructions == null || _Instructions.Count == 0) return;
             int undetermined = _Instructions.Where(inst => inst.Verb == FileInstructionVerb.Undetermined).Count();
-            ProgressLabel.Text = $"{_Instructions.Count - undetermined:N0}/{_Instructions.Count:N0}";
+            int delete = _Instructions.Where(inst => inst.Verb == FileInstructionVerb.Delete).Count();
+            int rename = _Instructions.Where(inst => inst.Verb == FileInstructionVerb.Rename).Count();
+
+
+            ProgressLabel.Text =
+@$"delete    {delete,6:N0}
+rename    {rename,6:N0}
+no action {undetermined,6:N0}
+----------------
+          {_Instructions.Count,6:N0}";
+            //ProgressLabel.Text = $"{_Instructions.Count - undetermined:N0}/{_Instructions.Count:N0}";
         }
         private string? GetNumberedRecentEntry(string entryNumber)
         {
@@ -400,6 +427,24 @@ namespace Naymidge
         //        }
         //    }
         //}
+
+        private string GetNumberedEntryFromHistory(int index)
+        {
+            char[] delims = ['\r', '\n'];
+            string[] lines = TxtRecent.Text.Split(delims, StringSplitOptions.RemoveEmptyEntries);
+            List<string> unnumberedEntries = new(lines.Length + 1);
+            foreach (string l in lines)
+            {
+                string line = l.Trim();
+                string sLineKey = line;
+                sLineKey = sLineKey[..(sLineKey.IndexOf(' ') + 1)].Trim();
+                if (sLineKey.Equals(index.ToString()))
+                {
+                    return line[(line.IndexOf(' ') + 1)..];
+                }
+            }
+            return "";
+        }
         private void AddRecentEntryToHistory(string entry)
         {
             char[] delims = ['\r', '\n'];
@@ -429,9 +474,9 @@ namespace Naymidge
 
         //    //string sBoxText = CboNameInput.Text;
         //    string sBoxText = txtNameInput.Text;
-        //    AutoCompleteStringCollection filteredTerms = [.. AllAcTermsList.Where(s => s.Contains(sBoxText))];
+        //    AutoCompleteStringCollection filteredTerms = [.. AllAcTermsList.Where(sLineKey => sLineKey.Contains(sBoxText))];
         //    //AutoCompleteStringCollection filteredTerms = new();
-        //    //foreach (string matchingTerm in AllAcTermsList.Where(s => s.Contains(sBoxText)))
+        //    //foreach (string matchingTerm in AllAcTermsList.Where(sLineKey => sLineKey.Contains(sBoxText)))
         //    //{
         //    //    filteredTerms.Add(matchingTerm);
         //    //}
@@ -446,9 +491,9 @@ namespace Naymidge
         //    ////3).show the user the new filtered list.
         //    //CboNameInput.DroppedDown = true; //this will overwrite the text in the ComboBox, so 4&5 put it back.
 
-        //    ////4).binding data source erases text, so now we need to put the user's text back,
+        //    ////4).binding data source erases text, so now we need to put the user'sLineKey text back,
         //    //CboNameInput.Text = sBoxText;
-        //    //CboNameInput.SelectionStart = sBoxText.Length; //5). need to put the user's cursor back where it was.
+        //    //CboNameInput.SelectionStart = sBoxText.Length; //5). need to put the user'sLineKey cursor back where it was.
         //}
 
         //private void CboNameInput_SelectedIndexChanged(object sender, EventArgs e)
