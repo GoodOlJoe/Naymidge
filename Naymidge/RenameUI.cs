@@ -51,9 +51,9 @@ namespace Naymidge
             InitializeComponent();
             flyleafHostMain.Player = PlayerMain;
 
-            txtNameInput.AutoCompleteCustomSource = AllAutoCompleteTerms;
-            txtNameInput.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
-            txtNameInput.AutoCompleteSource = AutoCompleteSource.CustomSource;
+            //txtNameInput.AutoCompleteCustomSource = AllAutoCompleteTerms;
+            //txtNameInput.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+            //txtNameInput.AutoCompleteSource = AutoCompleteSource.CustomSource;
 
             UpdateDisplays();
             DoLayout();
@@ -166,6 +166,23 @@ namespace Naymidge
                         CurrentItem = IncCurrent;
                         changingItems = true;
                         break;
+                    //case Keys.Up:
+                    //    DecrementSelectedAutoCompleteTerm();
+                    //    return true;
+                    //    break;
+                    //case Keys.Down:
+                    //    IncrementSelectedAutoCompleteTerm();
+                    //    return true;
+                    //    break;
+                    case Keys.Space:
+                        break;
+                    //default:
+                    //    // if cursor is at end of text
+                    //    if (txtNameInput.SelectionStart == txtNameInput.Text.Length)
+                    //    {
+                    //        RefreshAutoCompleteTermsDisplay(txtNameInput.Text);
+                    //    }
+                    //    break;
                 }
             }
             else if (e.Control)
@@ -186,6 +203,67 @@ namespace Naymidge
             }
             return false;
         }
+        //private void DecrementSelectedAutoCompleteTerm()
+        //{
+        //    int cnt = lboxAutoCompleteTerms.Items.Count;
+        //    int ndx = lboxAutoCompleteTerms.SelectedIndex;
+
+        //    if (0 == cnt) return;
+        //    if (ndx <= 0)
+        //    {
+        //        lboxAutoCompleteTerms.SelectedIndex = cnt - 1;
+        //    }
+        //    else
+        //    {
+        //        lboxAutoCompleteTerms.SelectedIndex--;
+        //    }
+        //}
+        //private void IncrementSelectedAutoCompleteTerm()
+        //{
+        //    int cnt = lboxAutoCompleteTerms.Items.Count;
+        //    int ndx = lboxAutoCompleteTerms.SelectedIndex;
+
+        //    if (0 == cnt) return;
+        //    if (ndx == -1 || ndx == cnt - 1)
+        //    {
+        //        lboxAutoCompleteTerms.SelectedIndex = 0;
+        //    }
+        //    else
+        //    {
+        //        lboxAutoCompleteTerms.SelectedIndex++;
+        //    }
+        //}
+
+        //private readonly HashSet<string> Terms = new(1000);
+        //private void RefreshAutoCompleteTermsDisplay(string inputText)
+        //{
+        //    string editContent = inputText;
+        //    if (string.IsNullOrEmpty(editContent))
+        //    {
+        //        lboxAutoCompleteTerms.Items.Clear();
+        //        return;
+        //    }
+
+        //    int cr = editContent.Length - 1; // cr is the position of the last char
+        //    while (cr >= 0 && !editContent[cr].Equals(' '))
+        //    {
+        //        cr--;
+        //    }
+        //    string wip = editContent[(cr + 1)..]; // word in progress
+        //    if (string.IsNullOrEmpty(wip)) return;
+
+        //    lboxAutoCompleteTerms.Items.Clear();
+        //    foreach (string t in Terms.Where(t => t.StartsWith(wip, System.StringComparison.OrdinalIgnoreCase)))
+        //    {
+        //        lboxAutoCompleteTerms.Items.Add(t);
+        //    }
+        //    if (lboxAutoCompleteTerms.Items.Count > 0)
+        //    {
+        //        lboxAutoCompleteTerms.SelectedIndex = 0;
+        //    }
+
+        //}
+        //public void AddAutoCompleteTerm(string term) { if (!Terms.Contains(term)) Terms.Add(term); }
         private const string DeleteNotice = "(marked for deletion)";
         private int DecCurrent => CurrentItem == 0 ? _Instructions.Count - 1 : --CurrentItem;
         private int IncCurrent => CurrentItem >= _Instructions.Count - 1 ? 0 : ++CurrentItem;
@@ -306,21 +384,22 @@ namespace Naymidge
         }
         private void AddRecentEntryToUi(string entry)
         {
-            AddRecentEntryToAutoComplete(entry);
+            //AddRecentEntryToAutoComplete(entry);
             AddRecentEntryToHistory(entry);
         }
         private readonly List<string> AutoCompleteNoiseWords = ["and", "of", "the"];
-        private void AddRecentEntryToAutoComplete(string entry)
-        {
-            foreach (Match m in AutoCompleteParsePattern.Matches(entry).Where(m => !AutoCompleteNoiseWords.Contains(m.Value)))
-            {
-                AllAutoCompleteTerms.Add(m.Value);
-                if (!AllAcTermsList.Contains(m.Value))
-                {
-                    AllAcTermsList.Add(m.Value);
-                }
-            }
-        }
+        //private void AddRecentEntryToAutoComplete(string entry)
+        //{
+        //    foreach (Match m in AutoCompleteParsePattern.Matches(entry).Where(m => !AutoCompleteNoiseWords.Contains(m.Value)))
+        //    {
+        //        AddAutoCompleteTerm(m.Value);
+        //        AllAutoCompleteTerms.Add(m.Value);
+        //        if (!AllAcTermsList.Contains(m.Value))
+        //        {
+        //            AllAcTermsList.Add(m.Value);
+        //        }
+        //    }
+        //}
         private void AddRecentEntryToHistory(string entry)
         {
             char[] delims = ['\r', '\n'];
@@ -343,41 +422,42 @@ namespace Naymidge
             TxtRecent.Text = numberedEntries.ToString();
         }
 
-        private void CboNameInput_KeyUp(object sender, KeyEventArgs e) { DoNameInputAutoComplete(e); }
-        private void DoNameInputAutoComplete(KeyEventArgs e)
-        {
-            //use keyUp event, as text changed traps too many other evengts.
+        //private void CboNameInput_KeyUp(object sender, KeyEventArgs e) { DoNameInputAutoComplete(e); }
+        //private void DoNameInputAutoComplete(KeyEventArgs e)
+        //{
+        //    //use keyUp event, as text changed traps too many other evengts.
 
-            string sBoxText = CboNameInput.Text;
-            AutoCompleteStringCollection filteredTerms = [.. AllAcTermsList.Where(s => s.Contains(sBoxText))];
-            //AutoCompleteStringCollection filteredTerms = new();
-            //foreach (string matchingTerm in AllAcTermsList.Where(s => s.Contains(sBoxText)))
-            //{
-            //    filteredTerms.Add(matchingTerm);
-            //}
+        //    //string sBoxText = CboNameInput.Text;
+        //    string sBoxText = txtNameInput.Text;
+        //    AutoCompleteStringCollection filteredTerms = [.. AllAcTermsList.Where(s => s.Contains(sBoxText))];
+        //    //AutoCompleteStringCollection filteredTerms = new();
+        //    //foreach (string matchingTerm in AllAcTermsList.Where(s => s.Contains(sBoxText)))
+        //    //{
+        //    //    filteredTerms.Add(matchingTerm);
+        //    //}
 
 
-            ////NOW THAT WE HAVE OUR FILTERED LIST, WE NEED TO RE-BIND IT WIHOUT CHANGING THE TEXT IN THE cbox
-            ////1).UNREGISTER THE SELECTED EVENT BEFORE RE-BINDING, b/c IT TRIGGERS ON BIND.
-            //CboNameInput.SelectedIndexChanged -= CboNameInput_SelectedIndexChanged; //don't select on typing.
-            //CboNameInput.DataSource = filteredTerms; //2).rebind to filtered list.
-            //CboNameInput.SelectedIndexChanged += CboNameInput_SelectedIndexChanged;
+        //    ////NOW THAT WE HAVE OUR FILTERED LIST, WE NEED TO RE-BIND IT WIHOUT CHANGING THE TEXT IN THE cbox
+        //    ////1).UNREGISTER THE SELECTED EVENT BEFORE RE-BINDING, b/c IT TRIGGERS ON BIND.
+        //    //CboNameInput.SelectedIndexChanged -= CboNameInput_SelectedIndexChanged; //don't select on typing.
+        //    //CboNameInput.DataSource = filteredTerms; //2).rebind to filtered list.
+        //    //CboNameInput.SelectedIndexChanged += CboNameInput_SelectedIndexChanged;
 
-            ////3).show the user the new filtered list.
-            //CboNameInput.DroppedDown = true; //this will overwrite the text in the ComboBox, so 4&5 put it back.
+        //    ////3).show the user the new filtered list.
+        //    //CboNameInput.DroppedDown = true; //this will overwrite the text in the ComboBox, so 4&5 put it back.
 
-            ////4).binding data source erases text, so now we need to put the user's text back,
-            //CboNameInput.Text = sBoxText;
-            //CboNameInput.SelectionStart = sBoxText.Length; //5). need to put the user's cursor back where it was.
-        }
+        //    ////4).binding data source erases text, so now we need to put the user's text back,
+        //    //CboNameInput.Text = sBoxText;
+        //    //CboNameInput.SelectionStart = sBoxText.Length; //5). need to put the user's cursor back where it was.
+        //}
 
-        private void CboNameInput_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (CboNameInput.SelectedValue != null)
-            {
-                Debug.WriteLine(string.Format(@"Item #{0} was selected.", CboNameInput.SelectedValue));
-            }
+        //private void CboNameInput_SelectedIndexChanged(object sender, EventArgs e)
+        //{
+        //    //if (CboNameInput.SelectedValue != null)
+        //    //{
+        //    //    Debug.WriteLine(string.Format(@"Item #{0} was selected.", CboNameInput.SelectedValue));
+        //    //}
 
-        }
+        //}
     }
 }
