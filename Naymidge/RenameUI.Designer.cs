@@ -32,7 +32,7 @@
             MediaDetailsLabel = new Label();
             LowerPanel = new Panel();
             ProgressLabel = new Label();
-            cmdClose = new Button();
+            cmdCancel = new Button();
             txtNameInput = new TextBox();
             MiddlePanel = new Panel();
             OuterContainer = new SplitContainer();
@@ -42,6 +42,7 @@
             TvAllBacks = new TreeView();
             PicboxBack = new PictureBox();
             TxtRecent = new TextBox();
+            cmdProceed = new Button();
             UpperPanel.SuspendLayout();
             LowerPanel.SuspendLayout();
             MiddlePanel.SuspendLayout();
@@ -64,15 +65,14 @@
             UpperPanel.Location = new Point(0, 0);
             UpperPanel.Margin = new Padding(4);
             UpperPanel.Name = "UpperPanel";
-            UpperPanel.Size = new Size(1047, 115);
+            UpperPanel.Size = new Size(1047, 65);
             UpperPanel.TabIndex = 4;
             // 
             // MediaDetailsLabel
             // 
             MediaDetailsLabel.AutoSize = true;
             MediaDetailsLabel.BackColor = Color.MistyRose;
-            MediaDetailsLabel.Dock = DockStyle.Left;
-            MediaDetailsLabel.Location = new Point(0, 0);
+            MediaDetailsLabel.Location = new Point(9, 9);
             MediaDetailsLabel.Margin = new Padding(0);
             MediaDetailsLabel.Name = "MediaDetailsLabel";
             MediaDetailsLabel.Size = new Size(112, 21);
@@ -82,37 +82,38 @@
             // LowerPanel
             // 
             LowerPanel.BackColor = Color.Khaki;
+            LowerPanel.Controls.Add(cmdProceed);
             LowerPanel.Controls.Add(ProgressLabel);
-            LowerPanel.Controls.Add(cmdClose);
+            LowerPanel.Controls.Add(cmdCancel);
             LowerPanel.Controls.Add(txtNameInput);
             LowerPanel.Dock = DockStyle.Bottom;
-            LowerPanel.Location = new Point(0, 554);
+            LowerPanel.Location = new Point(0, 500);
             LowerPanel.Margin = new Padding(4);
             LowerPanel.Name = "LowerPanel";
-            LowerPanel.Size = new Size(1047, 67);
+            LowerPanel.Size = new Size(1047, 121);
             LowerPanel.TabIndex = 6;
             // 
             // ProgressLabel
             // 
             ProgressLabel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             ProgressLabel.AutoSize = true;
-            ProgressLabel.Location = new Point(835, 23);
+            ProgressLabel.Font = new Font("Consolas", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            ProgressLabel.Location = new Point(769, 9);
             ProgressLabel.Name = "ProgressLabel";
-            ProgressLabel.Size = new Size(80, 21);
+            ProgressLabel.Size = new Size(70, 15);
             ProgressLabel.TabIndex = 2;
             ProgressLabel.Text = "{nnn/nnn}";
-            ProgressLabel.TextAlign = ContentAlignment.MiddleRight;
             // 
-            // cmdClose
+            // cmdCancel
             // 
-            cmdClose.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            cmdClose.Location = new Point(921, 16);
-            cmdClose.Name = "cmdClose";
-            cmdClose.Size = new Size(117, 35);
-            cmdClose.TabIndex = 1;
-            cmdClose.Text = "&Close";
-            cmdClose.UseVisualStyleBackColor = true;
-            cmdClose.Click += CmdClose_Click;
+            cmdCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            cmdCancel.Location = new Point(917, 74);
+            cmdCancel.Name = "cmdCancel";
+            cmdCancel.Size = new Size(117, 35);
+            cmdCancel.TabIndex = 1;
+            cmdCancel.Text = "&Cancel";
+            cmdCancel.UseVisualStyleBackColor = true;
+            cmdCancel.Click += CmdCancel_Click;
             // 
             // txtNameInput
             // 
@@ -120,17 +121,17 @@
             txtNameInput.Font = new Font("Segoe UI", 21.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
             txtNameInput.Location = new Point(7, 9);
             txtNameInput.Name = "txtNameInput";
-            txtNameInput.Size = new Size(709, 46);
+            txtNameInput.Size = new Size(756, 46);
             txtNameInput.TabIndex = 0;
-            txtNameInput.KeyUp += TxtNameInput_KeyUp;
+            txtNameInput.KeyUp += NameInput_KeyUp;
             // 
             // MiddlePanel
             // 
             MiddlePanel.BackColor = Color.Aquamarine;
             MiddlePanel.Controls.Add(OuterContainer);
-            MiddlePanel.Location = new Point(4, 122);
+            MiddlePanel.Location = new Point(4, 72);
             MiddlePanel.Name = "MiddlePanel";
-            MiddlePanel.Size = new Size(1031, 425);
+            MiddlePanel.Size = new Size(1031, 421);
             MiddlePanel.TabIndex = 7;
             // 
             // OuterContainer
@@ -150,7 +151,7 @@
             // 
             OuterContainer.Panel2.BackColor = Color.Pink;
             OuterContainer.Panel2.Controls.Add(TxtRecent);
-            OuterContainer.Size = new Size(1031, 425);
+            OuterContainer.Size = new Size(1031, 421);
             OuterContainer.SplitterDistance = 759;
             OuterContainer.SplitterWidth = 5;
             OuterContainer.TabIndex = 6;
@@ -174,8 +175,8 @@
             InnerContainer.Panel2.Controls.Add(BackDetailsLabel);
             InnerContainer.Panel2.Controls.Add(TvAllBacks);
             InnerContainer.Panel2.Controls.Add(PicboxBack);
-            InnerContainer.Size = new Size(759, 425);
-            InnerContainer.SplitterDistance = 281;
+            InnerContainer.Size = new Size(759, 421);
+            InnerContainer.SplitterDistance = 278;
             InnerContainer.SplitterWidth = 6;
             InnerContainer.TabIndex = 0;
             // 
@@ -195,7 +196,7 @@
             flyleafHostMain.PanRotateOnShiftWheel = true;
             flyleafHostMain.PanZoomOnCtrlWheel = true;
             flyleafHostMain.Player = null;
-            flyleafHostMain.Size = new Size(757, 279);
+            flyleafHostMain.Size = new Size(757, 276);
             flyleafHostMain.SwapDragEnterOnShift = true;
             flyleafHostMain.SwapOnDrop = true;
             flyleafHostMain.TabIndex = 1;
@@ -207,7 +208,7 @@
             BackDetailsLabel.AutoSize = true;
             BackDetailsLabel.BackColor = Color.Transparent;
             BackDetailsLabel.Font = new Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            BackDetailsLabel.Location = new Point(603, 68);
+            BackDetailsLabel.Location = new Point(603, 49);
             BackDetailsLabel.Margin = new Padding(0);
             BackDetailsLabel.Name = "BackDetailsLabel";
             BackDetailsLabel.Size = new Size(74, 13);
@@ -220,7 +221,7 @@
             TvAllBacks.Location = new Point(0, 0);
             TvAllBacks.Name = "TvAllBacks";
             TvAllBacks.ShowNodeToolTips = true;
-            TvAllBacks.Size = new Size(287, 136);
+            TvAllBacks.Size = new Size(287, 135);
             TvAllBacks.TabIndex = 1;
             TvAllBacks.AfterSelect += TvAllBacks_AfterSelect;
             // 
@@ -229,7 +230,7 @@
             PicboxBack.Dock = DockStyle.Right;
             PicboxBack.Location = new Point(424, 0);
             PicboxBack.Name = "PicboxBack";
-            PicboxBack.Size = new Size(333, 136);
+            PicboxBack.Size = new Size(333, 135);
             PicboxBack.SizeMode = PictureBoxSizeMode.Zoom;
             PicboxBack.TabIndex = 0;
             PicboxBack.TabStop = false;
@@ -241,8 +242,18 @@
             TxtRecent.Location = new Point(0, 0);
             TxtRecent.Multiline = true;
             TxtRecent.Name = "TxtRecent";
-            TxtRecent.Size = new Size(265, 423);
+            TxtRecent.Size = new Size(265, 419);
             TxtRecent.TabIndex = 0;
+            // 
+            // cmdProceed
+            // 
+            cmdProceed.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            cmdProceed.Location = new Point(918, 29);
+            cmdProceed.Name = "cmdProceed";
+            cmdProceed.Size = new Size(117, 35);
+            cmdProceed.TabIndex = 3;
+            cmdProceed.Text = "&Proceed";
+            cmdProceed.UseVisualStyleBackColor = true;
             // 
             // RenameUI
             // 
@@ -286,7 +297,7 @@
         private Panel UpperPanel;
         private Panel LowerPanel;
         private Label MediaDetailsLabel;
-        private Button cmdClose;
+        private Button cmdCancel;
         private TextBox txtNameInput;
         private Label ProgressLabel;
         private Panel MiddlePanel;
@@ -297,5 +308,6 @@
         private TreeView TvAllBacks;
         private PictureBox PicboxBack;
         private TextBox TxtRecent;
+        private Button cmdProceed;
     }
 }

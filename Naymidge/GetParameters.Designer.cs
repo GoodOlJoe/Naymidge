@@ -251,11 +251,11 @@
             CmdRename.UseVisualStyleBackColor = true;
             CmdRename.Click += CmdRename_Click;
             // 
-            // cmdClose
+            // cmdCancel
             // 
             cmdClose.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             cmdClose.Location = new Point(925, 525);
-            cmdClose.Name = "cmdClose";
+            cmdClose.Name = "cmdCancel";
             cmdClose.Size = new Size(184, 38);
             cmdClose.TabIndex = 3;
             cmdClose.Text = "&Close";
