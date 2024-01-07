@@ -1,6 +1,7 @@
 using FlyleafLib;
 using FlyleafLib.MediaPlayer;
 using System.Data;
+using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -12,6 +13,10 @@ namespace Naymidge
         public Config Config { get; set; }
         private readonly List<FileInstruction> _Instructions;
         private int CurrentItem = 0;
+        private const string DeleteNotice = "(marked for deletion)";
+        private const string ReuseLastNameShortcut = "ÿ";
+        private int DecCurrent => CurrentItem == 0 ? _Instructions.Count - 1 : --CurrentItem;
+        private int IncCurrent => CurrentItem >= _Instructions.Count - 1 ? 0 : ++CurrentItem;
 
         public RenameUI(ProcessingScope scope)
         {
@@ -42,14 +47,14 @@ namespace Naymidge
             PlayerMain = new Player(Config);
             InitializeComponent();
 
+            txtNameInput.KeyPress += NameInput_KeyPress;
             cmdProceed.Click += CmdProceed_Click;
 
             flyleafHostMain.Player = PlayerMain;
-            KeyboardShortcutsLabel.Text = @"
-Ctrl-D   Mark/Unmark for delete                   F11      Previous item
-Ctrl-B   Select a Back image to view              F12      Next item
-Ctrl-E   Edit the name                            <number> Reuse numbered name from the list
-                                                  <space>  Reuse most recent name";
+            KeyboardShortcutsLabel.Text = @"Alt-B     Select a Back image to view           F10      Mark/Unmark for delete
+Alt-E     Edit the name                         F11      Previous item
+<number>  Reuse numbered name from the list     F12      Next item
+<space>   Reuse most recent name";
             UpdateDisplays();
             DoLayout();
         }
@@ -105,14 +110,11 @@ Ctrl-E   Edit the name                            <number> Reuse numbered name f
             if (index < 0 || index > _Instructions.Count) return;
             player.OpenAsync(_Instructions[index].FQN);
         }
-
         private void BackDetailsLabel_TextChanged(object sender, EventArgs e) { SetBackDetailsLabelPosition(); }
         private void CmdCancel_Click(object sender, EventArgs e) { DoCancelButtonClicked(); }
         private void CmdProceed_Click(object? sender, EventArgs e) { DoProceedButtonClicked(); }
         private void InnerContainer_SplitterMoved(object sender, SplitterEventArgs e) { DoLayout(); }
         private void OuterContainer_SplitterMoved(object sender, SplitterEventArgs e) { DoLayout(); }
-        //private void PicboxBack_SizeChanged(object sender, EventArgs e) { DoLayout(); }
-        private void RenameUI_KeyUp(object sender, KeyEventArgs e) { e.SuppressKeyPress = FormKeyUpHandled(sender, e); }
         private void RenameUI_Load(object sender, EventArgs e)
         {
             DoLayout();
@@ -120,8 +122,10 @@ Ctrl-E   Edit the name                            <number> Reuse numbered name f
         }
         private void RenameUI_Resize(object sender, EventArgs e) { DoLayout(); }
         private void TvAllBacks_AfterSelect(object sender, TreeViewEventArgs e) { DoBackImageSelectionChanged(e); }
-        private void NameInput_KeyUp(object sender, KeyEventArgs e) { e.SuppressKeyPress = InputKeyUpHandled(sender, e); }
-
+        private void RenameUI_KeyUp(object sender, KeyEventArgs e) { e.Handled = FormKeyUpHandled(e); }
+        private void NameInput_KeyPress(object? sender, KeyPressEventArgs e) { e.Handled = InputKeyPressHandled(e); }
+        private void AddRecentEntryToUi(string entry) { AddRecentEntryToHistory(entry); }
+        private void SetBackDetailsLabelPosition() { DockUpperRight(BackDetailsLabel, PicboxBack); }
         private void DoCancelButtonClicked()
         {
             int delete = _Instructions.Where(inst => inst.Verb == FileInstructionVerb.Delete && !inst.Completed).Count();
@@ -147,7 +151,6 @@ Ctrl-E   Edit the name                            <number> Reuse numbered name f
             PlayerMain.Stop(); // release lock on the currently displayed media file
             ui.ProcessFileInstructions(_Instructions);
         }
-
         private void DoLayout()
         {
             MiddlePanel.Height = ClientRectangle.Height - UpperPanel.Height - LowerPanel.Height;
@@ -165,84 +168,64 @@ Ctrl-E   Edit the name                            <number> Reuse numbered name f
             lblPositionDisplay.Top = 0;
             lblPositionDisplay.Left = UpperPanel.Width - lblPositionDisplay.Width;
         }
-        private bool FormKeyUpHandled(object sender, KeyEventArgs e)
+        private bool FormKeyUpHandled(KeyEventArgs e)
         {
+            bool handled = false;
             if (!(e.Control || e.Shift || e.Alt))
             {
                 switch (e.KeyCode)
                 {
-                    case Keys.F11: CurrentItem = DecCurrent; SetUiToItem(CurrentItem); return true;
-                    case Keys.F12: CurrentItem = IncCurrent; SetUiToItem(CurrentItem); return true;
-                }
-            }
-            else if (e.Control)
-            {
-                switch (e.KeyCode)
-                {
-                    case Keys.E: txtNameInput.Focus(); return true; // ctrl e - focus on name input field
-                    case Keys.B: TvAllBacks.Focus(); return true;   // ctrl b - focus on back image names
-                }
-            }
-            return false;
-        }
-        private const string ReuseLastNameShortcut = "ÿ";
-        private bool InputKeyUpHandled(object sender, KeyEventArgs e)
-        {
-            bool changingItems = false;
-            if (!(e.Control || e.Shift || e.Alt))
-            {
-                switch (e.KeyCode)
-                {
-                    case Keys.Enter:
-
-                        // special shortcut for reusing the most recent name is a space, saves them typing "1"
-                        string newName = txtNameInput.Text.Equals(" ") ? ReuseLastNameShortcut : txtNameInput.Text.Trim();
-
-                        if (!string.IsNullOrEmpty(newName))
-                        {
-                            newName = newName.Equals(ReuseLastNameShortcut) ? "1" : newName;
-
-                            // first see if they are resuing a numbered entry from the list
-                            if (int.TryParse(newName, out int reuseIndex))
-                            {
-                                string reusedName = GetNumberedEntryFromHistory(reuseIndex);
-                                newName = string.IsNullOrEmpty(reusedName) ? newName : reusedName;
-                            }
-
-                            if (!newName.Equals(DeleteNotice))
-                            {
-                                _Instructions[CurrentItem].Rename(newName);
-                                AddRecentEntryToUi(newName);
-                            }
-                        }
-                        CurrentItem = IncCurrent;
-                        changingItems = true;
-                        break;
-                    case Keys.Space:
-                        break;
-                }
-            }
-            else if (e.Control)
-            {
-                switch (e.KeyCode)
-                {
-                    case Keys.D:
+                    case Keys.F10: // toggle mark for delete
                         _Instructions[CurrentItem].ToggleDelete();
                         CurrentItem = IncCurrent;
-                        changingItems = true;
+                        SetUiToItem(CurrentItem);
+                        handled = true;
+                        break;
+                    case Keys.F11:
+                        CurrentItem = DecCurrent;
+                        SetUiToItem(CurrentItem);
+                        handled = true;
+                        break;
+                    case Keys.F12:
+                        CurrentItem = IncCurrent;
+                        SetUiToItem(CurrentItem);
+                        handled = true;
                         break;
                 }
             }
-            if (changingItems)
+            return handled;
+        }
+        private bool InputKeyPressHandled(KeyPressEventArgs e)
+        {
+            Debug.WriteLine(e.KeyChar.ToString());
+            if (e.KeyChar == '\r')
             {
+                // special shortcut for reusing the most recent name is a space, saves them typing "1"
+                string newName = txtNameInput.Text.Equals(" ") ? ReuseLastNameShortcut : txtNameInput.Text.Trim();
+
+                if (!string.IsNullOrEmpty(newName))
+                {
+                    newName = newName.Equals(ReuseLastNameShortcut) ? "1" : newName;
+
+                    // first see if they are resuing a numbered entry from the list
+                    if (int.TryParse(newName, out int reuseIndex))
+                    {
+                        string reusedName = GetNumberedEntryFromHistory(reuseIndex);
+                        newName = string.IsNullOrEmpty(reusedName) ? newName : reusedName;
+                    }
+
+                    if (!newName.Equals(DeleteNotice))
+                    {
+                        _Instructions[CurrentItem].Rename(newName);
+                        AddRecentEntryToUi(newName);
+                    }
+                }
+                CurrentItem = IncCurrent;
                 SetUiToItem(CurrentItem);
                 return true;
             }
             return false;
         }
-        private const string DeleteNotice = "(marked for deletion)";
-        private int DecCurrent => CurrentItem == 0 ? _Instructions.Count - 1 : --CurrentItem;
-        private int IncCurrent => CurrentItem >= _Instructions.Count - 1 ? 0 : ++CurrentItem;
         private void SetUiToItem(int itemNdx)
         {
             switch (_Instructions[itemNdx].Verb)
@@ -292,10 +275,6 @@ Ctrl-E   Edit the name                            <number> Reuse numbered name f
             else
                 c.Location = c.Parent.PointToClient(cLocation); // place on Parent
         }
-        private void SetBackDetailsLabelPosition()
-        {
-            DockUpperRight(BackDetailsLabel, PicboxBack);
-        }
         private void UpdateProgressLabel()
         {
             ProgressLabel.Text = "";
@@ -325,10 +304,6 @@ no action {undetermined,6:N0}
                 return null;
             else
                 return match.Trim()[(match.IndexOf(' ') + 1)..];
-        }
-        private void AddRecentEntryToUi(string entry)
-        {
-            AddRecentEntryToHistory(entry);
         }
         private string GetNumberedEntryFromHistory(int index)
         {

@@ -29,8 +29,10 @@
         private void InitializeComponent()
         {
             UpperPanel = new Panel();
+            lblPositionDisplay = new Label();
             MediaDetailsLabel = new Label();
             LowerPanel = new Panel();
+            label1 = new Label();
             KeyboardShortcutsLabel = new Label();
             cmdProceed = new Button();
             ProgressLabel = new Label();
@@ -40,11 +42,11 @@
             OuterContainer = new SplitContainer();
             InnerContainer = new SplitContainer();
             flyleafHostMain = new FlyleafLib.Controls.WinForms.FlyleafHost();
+            BackImageAccessLabel = new Label();
             BackDetailsLabel = new Label();
             TvAllBacks = new TreeView();
             PicboxBack = new PictureBox();
             TxtRecent = new TextBox();
-            lblPositionDisplay = new Label();
             UpperPanel.SuspendLayout();
             LowerPanel.SuspendLayout();
             MiddlePanel.SuspendLayout();
@@ -71,6 +73,17 @@
             UpperPanel.Size = new Size(1047, 65);
             UpperPanel.TabIndex = 4;
             // 
+            // lblPositionDisplay
+            // 
+            lblPositionDisplay.Anchor = AnchorStyles.None;
+            lblPositionDisplay.AutoSize = true;
+            lblPositionDisplay.Font = new Font("Segoe UI", 20.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblPositionDisplay.Location = new Point(865, 0);
+            lblPositionDisplay.Name = "lblPositionDisplay";
+            lblPositionDisplay.Size = new Size(182, 37);
+            lblPositionDisplay.TabIndex = 1;
+            lblPositionDisplay.Text = "{current/total}";
+            // 
             // MediaDetailsLabel
             // 
             MediaDetailsLabel.AutoSize = true;
@@ -85,6 +98,7 @@
             // LowerPanel
             // 
             LowerPanel.BackColor = Color.Khaki;
+            LowerPanel.Controls.Add(label1);
             LowerPanel.Controls.Add(KeyboardShortcutsLabel);
             LowerPanel.Controls.Add(cmdProceed);
             LowerPanel.Controls.Add(ProgressLabel);
@@ -96,6 +110,16 @@
             LowerPanel.Name = "LowerPanel";
             LowerPanel.Size = new Size(1047, 121);
             LowerPanel.TabIndex = 6;
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Font = new Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            label1.Location = new Point(8, 9);
+            label1.Name = "label1";
+            label1.Size = new Size(58, 13);
+            label1.TabIndex = 5;
+            label1.Text = "&Edit name";
             // 
             // KeyboardShortcutsLabel
             // 
@@ -143,11 +167,10 @@
             // 
             txtNameInput.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             txtNameInput.Font = new Font("Segoe UI", 21.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            txtNameInput.Location = new Point(7, 9);
+            txtNameInput.Location = new Point(72, 9);
             txtNameInput.Name = "txtNameInput";
-            txtNameInput.Size = new Size(756, 46);
-            txtNameInput.TabIndex = 0;
-            txtNameInput.KeyUp += NameInput_KeyUp;
+            txtNameInput.Size = new Size(691, 46);
+            txtNameInput.TabIndex = 6;
             // 
             // MiddlePanel
             // 
@@ -196,6 +219,7 @@
             // InnerContainer.Panel2
             // 
             InnerContainer.Panel2.BackColor = Color.FromArgb(128, 128, 255);
+            InnerContainer.Panel2.Controls.Add(BackImageAccessLabel);
             InnerContainer.Panel2.Controls.Add(BackDetailsLabel);
             InnerContainer.Panel2.Controls.Add(TvAllBacks);
             InnerContainer.Panel2.Controls.Add(PicboxBack);
@@ -226,13 +250,23 @@
             flyleafHostMain.TabIndex = 1;
             flyleafHostMain.ToggleFullScreenOnDoubleClick = true;
             // 
+            // BackImageAccessLabel
+            // 
+            BackImageAccessLabel.AutoSize = true;
+            BackImageAccessLabel.Font = new Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            BackImageAccessLabel.Location = new Point(0, 0);
+            BackImageAccessLabel.Name = "BackImageAccessLabel";
+            BackImageAccessLabel.Size = new Size(106, 13);
+            BackImageAccessLabel.TabIndex = 6;
+            BackImageAccessLabel.Text = "Select &Back To View";
+            // 
             // BackDetailsLabel
             // 
             BackDetailsLabel.Anchor = AnchorStyles.None;
             BackDetailsLabel.AutoSize = true;
             BackDetailsLabel.BackColor = Color.Transparent;
             BackDetailsLabel.Font = new Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            BackDetailsLabel.Location = new Point(603, 46);
+            BackDetailsLabel.Location = new Point(603, 40);
             BackDetailsLabel.Margin = new Padding(0);
             BackDetailsLabel.Name = "BackDetailsLabel";
             BackDetailsLabel.Size = new Size(74, 13);
@@ -241,12 +275,13 @@
             // 
             // TvAllBacks
             // 
-            TvAllBacks.Dock = DockStyle.Left;
-            TvAllBacks.Location = new Point(0, 0);
+            TvAllBacks.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
+            TvAllBacks.HideSelection = false;
+            TvAllBacks.Location = new Point(0, 16);
             TvAllBacks.Name = "TvAllBacks";
             TvAllBacks.ShowNodeToolTips = true;
-            TvAllBacks.Size = new Size(287, 135);
-            TvAllBacks.TabIndex = 1;
+            TvAllBacks.Size = new Size(287, 115);
+            TvAllBacks.TabIndex = 7;
             TvAllBacks.AfterSelect += TvAllBacks_AfterSelect;
             // 
             // PicboxBack
@@ -268,17 +303,6 @@
             TxtRecent.Name = "TxtRecent";
             TxtRecent.Size = new Size(265, 419);
             TxtRecent.TabIndex = 0;
-            // 
-            // lblPositionDisplay
-            // 
-            lblPositionDisplay.Anchor = AnchorStyles.None;
-            lblPositionDisplay.AutoSize = true;
-            lblPositionDisplay.Font = new Font("Segoe UI", 20.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            lblPositionDisplay.Location = new Point(865, 0);
-            lblPositionDisplay.Name = "lblPositionDisplay";
-            lblPositionDisplay.Size = new Size(182, 37);
-            lblPositionDisplay.TabIndex = 1;
-            lblPositionDisplay.Text = "{current/total}";
             // 
             // RenameUI
             // 
@@ -335,5 +359,7 @@
         private Button cmdProceed;
         private Label KeyboardShortcutsLabel;
         private Label lblPositionDisplay;
+        private Label label1;
+        private Label BackImageAccessLabel;
     }
 }
