@@ -24,8 +24,18 @@
         public string NewFileName { get; private set; } = string.Empty;
         public FileInstructionVerb Verb { get; private set; } = FileInstructionVerb.Undetermined;
 
-        public void Delete() { NewFileName = ""; Verb = FileInstructionVerb.Delete; }
         public void Rename(string newName) { NewFileName = newName; Verb = FileInstructionVerb.Rename; }
         public void Reset() { NewFileName = ""; Verb = FileInstructionVerb.Undetermined; }
+        public void ToggleDelete()
+        {
+            if (FileInstructionVerb.Delete == Verb)
+            {
+                Reset();
+            }
+            else
+            {
+                NewFileName = ""; Verb = FileInstructionVerb.Delete;
+            }
+        }
     }
 }

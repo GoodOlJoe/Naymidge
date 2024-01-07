@@ -44,6 +44,7 @@
             TvAllBacks = new TreeView();
             PicboxBack = new PictureBox();
             TxtRecent = new TextBox();
+            lblPositionDisplay = new Label();
             UpperPanel.SuspendLayout();
             LowerPanel.SuspendLayout();
             MiddlePanel.SuspendLayout();
@@ -61,6 +62,7 @@
             // UpperPanel
             // 
             UpperPanel.BackColor = Color.RosyBrown;
+            UpperPanel.Controls.Add(lblPositionDisplay);
             UpperPanel.Controls.Add(MediaDetailsLabel);
             UpperPanel.Dock = DockStyle.Top;
             UpperPanel.Location = new Point(0, 0);
@@ -230,7 +232,7 @@
             BackDetailsLabel.AutoSize = true;
             BackDetailsLabel.BackColor = Color.Transparent;
             BackDetailsLabel.Font = new Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            BackDetailsLabel.Location = new Point(603, 47);
+            BackDetailsLabel.Location = new Point(603, 46);
             BackDetailsLabel.Margin = new Padding(0);
             BackDetailsLabel.Name = "BackDetailsLabel";
             BackDetailsLabel.Size = new Size(74, 13);
@@ -267,6 +269,17 @@
             TxtRecent.Size = new Size(265, 419);
             TxtRecent.TabIndex = 0;
             // 
+            // lblPositionDisplay
+            // 
+            lblPositionDisplay.Anchor = AnchorStyles.None;
+            lblPositionDisplay.AutoSize = true;
+            lblPositionDisplay.Font = new Font("Segoe UI", 20.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblPositionDisplay.Location = new Point(865, 0);
+            lblPositionDisplay.Name = "lblPositionDisplay";
+            lblPositionDisplay.Size = new Size(182, 37);
+            lblPositionDisplay.TabIndex = 1;
+            lblPositionDisplay.Text = "{current/total}";
+            // 
             // RenameUI
             // 
             AutoScaleDimensions = new SizeF(9F, 21F);
@@ -282,7 +295,6 @@
             Name = "RenameUI";
             Text = "Rename";
             Load += RenameUI_Load;
-            //KeyDown += RenameUI_KeyDown;
             KeyUp += RenameUI_KeyUp;
             Resize += RenameUI_Resize;
             UpperPanel.ResumeLayout(false);
@@ -322,5 +334,6 @@
         private TextBox TxtRecent;
         private Button cmdProceed;
         private Label KeyboardShortcutsLabel;
+        private Label lblPositionDisplay;
     }
 }

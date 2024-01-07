@@ -55,7 +55,8 @@ namespace Naymidge
             cmdProceed.Click += CmdProceed_Click;
 
             flyleafHostMain.Player = PlayerMain;
-            KeyboardShortcutsLabel.Text = @"Ctrl-D   Delete the item (mark for delete)        F11      Previous item
+            KeyboardShortcutsLabel.Text = @"
+Ctrl-D   Mark/Unmark for delete                   F11      Previous item
 Ctrl-B   Select a Back image to view              F12      Next item
 Ctrl-E   Edit the name                            <number> Reuse numbered name from the list
                                                   <space>  Reuse most recent name";
@@ -70,6 +71,8 @@ Ctrl-E   Edit the name                            <number> Reuse numbered name f
                 return;
             }
             MediaDetailsLabel.Text = _Instructions[CurrentItem].FQN;
+            lblPositionDisplay.Text = $"{CurrentItem + 1}/{_Instructions.Count}";
+            LayoutPositionDisplay();
             OpenMedia(PlayerMain, CurrentItem);
             PopulateBackImage(_Instructions[CurrentItem].FQN);
         }
@@ -115,7 +118,7 @@ Ctrl-E   Edit the name                            <number> Reuse numbered name f
 
         private void BackDetailsLabel_TextChanged(object sender, EventArgs e) { SetBackDetailsLabelPosition(); }
         private void CmdCancel_Click(object sender, EventArgs e) { DoCancelButtonClicked(); }
-        private void CmdProceed_Click(object sender, EventArgs e) { DoProceedButtonClicked(); }
+        private void CmdProceed_Click(object? sender, EventArgs e) { DoProceedButtonClicked(); }
         private void InnerContainer_SplitterMoved(object sender, SplitterEventArgs e) { DoLayout(); }
         private void OuterContainer_SplitterMoved(object sender, SplitterEventArgs e) { DoLayout(); }
         //private void PicboxBack_SizeChanged(object sender, EventArgs e) { DoLayout(); }
@@ -161,6 +164,12 @@ Ctrl-E   Edit the name                            <number> Reuse numbered name f
             SetBackImagePosition();
             SetBackDetailsLabelPosition();
             UpdateProgressLabel();
+            LayoutPositionDisplay();
+        }
+        private void LayoutPositionDisplay()
+        {
+            lblPositionDisplay.Top = 0;
+            lblPositionDisplay.Left = UpperPanel.Width - lblPositionDisplay.Width;
         }
         private bool FormKeyUpHandled(object sender, KeyEventArgs e)
         {
@@ -224,7 +233,7 @@ Ctrl-E   Edit the name                            <number> Reuse numbered name f
                 switch (e.KeyCode)
                 {
                     case Keys.D:
-                        _Instructions[CurrentItem].Delete();
+                        _Instructions[CurrentItem].ToggleDelete();
                         CurrentItem = IncCurrent;
                         changingItems = true;
                         break;
@@ -364,6 +373,8 @@ no action {undetermined,6:N0}
             numberedEntries.AppendLine($"{1,4:D} {entry}");
 
             TxtRecent.Text = numberedEntries.ToString();
+            TxtRecent.SelectionStart = TxtRecent.Text.Length;
+            TxtRecent.ScrollToCaret();
         }
     }
 }
