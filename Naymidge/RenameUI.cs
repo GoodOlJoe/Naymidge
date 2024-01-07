@@ -1,14 +1,8 @@
 using FlyleafLib;
-using FlyleafLib.Controls.WinForms;
 using FlyleafLib.MediaPlayer;
 using System.Data;
-using System.Diagnostics;
-using System.Printing;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Windows.Documents;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Naymidge
 {

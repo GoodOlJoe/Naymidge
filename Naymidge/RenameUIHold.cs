@@ -1,5 +1,4 @@
 using FlyleafLib;
-using FlyleafLib.Controls.WinForms;
 using FlyleafLib.MediaPlayer;
 
 namespace Naymidge
@@ -66,8 +65,8 @@ namespace Naymidge
             }
             MediaDetailsLabel.Text = _Scope.Contents[CurrentItem];
             OpenMedia(PlayerMain, CurrentItem);
-            OpenMedia(PlayerPrev, CurrentItem-1);
-            OpenMedia(PlayerNext, CurrentItem+1);
+            OpenMedia(PlayerPrev, CurrentItem - 1);
+            OpenMedia(PlayerNext, CurrentItem + 1);
         }
         private void OpenMedia(Player player, int index)
         {
