@@ -14,8 +14,9 @@ namespace Naymidge
         }
         private void CmdClose_Click(object? sender, EventArgs e) { DoCloseButtonClicked(); }
         private void CmdCancel_Click(object? sender, EventArgs e) { DoCancelButtonClicked(); }
+        private void ActionUI_Load(object sender, EventArgs e) { WindowState = FormWindowState.Maximized; }
         private void DoCloseButtonClicked() { Close(); }
-        private void DoCancelButtonClicked() { }
+        private void DoCancelButtonClicked() { _UserCancel = true; }
         internal void ProcessFileInstructions(List<FileInstruction> instructions)
         {
             int delete = instructions.Where(inst => inst.Verb == FileInstructionVerb.Delete && !inst.Completed).Count();
@@ -106,6 +107,5 @@ namespace Naymidge
                 ProgressBar.Value = 0;
             }
         }
-
     }
 }

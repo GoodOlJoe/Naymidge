@@ -2,7 +2,7 @@
 
 namespace Naymidge
 {
-    internal static class FileActions
+    internal static partial class FileActions
     {
         internal static string DoInstruction(FileInstruction instruction)
         {
@@ -53,7 +53,7 @@ namespace Naymidge
             string? ext = Path.GetExtension(FQN);
             ext = string.IsNullOrEmpty(ext) ? "" : ext;
 
-            Regex rgx = new Regex(@"(?<basename>.+?)(?<serial>[\d\W]+)?$");
+            Regex rgx = FileNameSerialNumberRegex();
             MatchCollection matches = rgx.Matches(filename);
             string basename = matches.Count > 0 ? matches[0].Groups["basename"].Value : filename;
 
@@ -67,5 +67,8 @@ namespace Naymidge
 
             return trialName;
         }
+
+        [GeneratedRegex(@"(?<basename>.+?)(?<serial>[\d\W]+)?$")]
+        private static partial Regex FileNameSerialNumberRegex();
     }
 }

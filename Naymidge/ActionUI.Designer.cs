@@ -99,6 +99,7 @@
             Margin = new Padding(4);
             Name = "ActionUI";
             Text = "Process File Changes";
+            Load += ActionUI_Load;
             statusStrip1.ResumeLayout(false);
             statusStrip1.PerformLayout();
             ResumeLayout(false);

@@ -18,10 +18,6 @@ namespace Naymidge
         public Config Config { get; set; }
         private readonly List<FileInstruction> _Instructions;
         private int CurrentItem = 0;
-        //private Label? KeyboardShortcutsHelp = null;
-        private AutoCompleteStringCollection AllAutoCompleteTerms = new AutoCompleteStringCollection();
-        private List<string> AllAcTermsList = new(1000);
-        private Regex AutoCompleteParsePattern = new Regex(@"[A-Za-z]{3,}", RegexOptions.Compiled | RegexOptions.NonBacktracking);
 
         public RenameUI(ProcessingScope scope)
         {
@@ -123,7 +119,11 @@ Ctrl-E   Edit the name                            <number> Reuse numbered name f
         private void OuterContainer_SplitterMoved(object sender, SplitterEventArgs e) { DoLayout(); }
         //private void PicboxBack_SizeChanged(object sender, EventArgs e) { DoLayout(); }
         private void RenameUI_KeyUp(object sender, KeyEventArgs e) { e.SuppressKeyPress = FormKeyUpHandled(sender, e); }
-        private void RenameUI_Load(object sender, EventArgs e) { DoLayout(); }
+        private void RenameUI_Load(object sender, EventArgs e)
+        {
+            DoLayout();
+            WindowState = FormWindowState.Maximized;
+        }
         private void RenameUI_Resize(object sender, EventArgs e) { DoLayout(); }
         private void TvAllBacks_AfterSelect(object sender, TreeViewEventArgs e) { DoBackImageSelectionChanged(e); }
         private void NameInput_KeyUp(object sender, KeyEventArgs e) { e.SuppressKeyPress = InputKeyUpHandled(sender, e); }

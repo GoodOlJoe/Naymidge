@@ -31,6 +31,7 @@ namespace Naymidge
             CurrentSelectionStatus = SelectionStatus.NoContentDirectory;
             SetControlMruBindings();
             DoRefreshSelection();
+            WindowState = FormWindowState.Maximized;
         }
         private void SetControlMruBindings()
         {
