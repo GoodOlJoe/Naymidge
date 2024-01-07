@@ -1,8 +1,4 @@
-﻿using System.IO;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text.RegularExpressions;
 
 namespace Naymidge
 {
@@ -14,7 +10,7 @@ namespace Naymidge
             switch (instruction.Verb)
             {
                 case FileInstructionVerb.Delete:
-                    retMsg = DoDelete(instruction);
+                    DoDelete(instruction);
                     break;
                 case FileInstructionVerb.Rename:
                     retMsg = DoRename(instruction);
@@ -22,47 +18,50 @@ namespace Naymidge
             }
             return retMsg;
         }
-        private static string DoDelete(FileInstruction instruction)
+        private static void DoDelete(FileInstruction instruction)
         {
-            try
-            {
-                File.Delete(instruction.FQN);
-            }
-            catch (Exception ex)
-            {
-                return ($"Cannot delete [{instruction.FQN}]\r\n{ex.Message}");
-            }
-            return "";
+            File.Delete(instruction.FQN);
         }
         private static string DoRename(FileInstruction instruction)
         {
-            if (!File.Exists(instruction.FQN))
-                return ($"Cannot rename file that does not exist [{instruction.FQN}]");
-
-            string newFQN = GetNewFQN(instruction);
-            if (string.IsNullOrEmpty(newFQN))
-                return ($"Cannot rename file, unknown error [{instruction.FQN}]");
-
-            if (File.Exists(newFQN))
-                newFQN = GetNewSerialFQN(newFQN);
-
-            return "";
+            string newFQN = SerialFQN(TargetFQN(instruction));
+            File.Move(instruction.FQN, newFQN);
+            return newFQN;
         }
-        private static string GetNewFQN(FileInstruction instruction)
+        private static string TargetFQN(FileInstruction instruction)
         {
             string? dir = Path.GetDirectoryName(instruction.FQN);
-            if (string.IsNullOrEmpty(dir))
-                return "";
+            dir = string.IsNullOrEmpty(dir) ? "" : dir;
             return Path.Combine(dir, instruction.NewFileName);
         }
-        private static string GetNewSerialFQN(string FQN)
+        private static string SerialFQN(string FQN)
         {
-            // create a FQN with a serial number that will make it unique in the given dir
+            // return an FQN that will be unique in the given dir, adding serial numbers if necessary
+
+            if (!File.Exists(FQN)) return FQN; // no need to add serial
+
             string? dir = Path.GetDirectoryName(FQN);
-            Directory.GetFiles()
-            if (string.IsNullOrEmpty(dir))
-                return "";
-            return Path.Combine(dir, instruction.NewFileName);
+            dir = string.IsNullOrEmpty(dir) ? "" : dir;
+
+            string? filename = Path.GetFileNameWithoutExtension(FQN);
+            filename = string.IsNullOrEmpty(filename) ? "" : filename;
+
+            string? ext = Path.GetExtension(FQN);
+            ext = string.IsNullOrEmpty(ext) ? "" : ext;
+
+            Regex rgx = new Regex(@"(?<basename>.+?)(?<serial>[\d\W]+)?$");
+            MatchCollection matches = rgx.Matches(filename);
+            string basename = matches.Count > 0 ? matches[0].Groups["basename"].Value : filename;
+
+            int serial = 1;
+            string trialName = Path.Combine(dir, $"{basename} {serial}{ext}");
+            while (File.Exists(trialName))
+            {
+                serial++;
+                trialName = Path.Combine(dir, $"{basename} {serial}{ext}");
+            }
+
+            return trialName;
         }
     }
 }
