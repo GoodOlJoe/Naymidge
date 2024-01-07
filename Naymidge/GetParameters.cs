@@ -48,7 +48,6 @@ namespace Naymidge
             return true;
         }
         private void CmdClose_Click(object sender, EventArgs e) { Application.Exit(); }
-        //private void CmdIngest_Click(object sender, EventArgs e) { DoIngest(); }
         private void CmdRename_Click(object sender, EventArgs e) { DoRenameForm(); }
         private void TimerSelectionRefresh_Tick(object sender, EventArgs e) { DoRefreshSelection(); }
         private void Selection_Changed(object sender, EventArgs e) { ResetSelectionRefreshTimer(); }
@@ -57,38 +56,6 @@ namespace Naymidge
         private void GetParameters_FormClosing(object sender, FormClosingEventArgs e) { Naymidge.Properties.Settings.Default.Save(); }
         private void GetParameters_Resize(object sender, EventArgs e) { PositionComponents(); }
 
-        //private void DoIngest()
-        //{
-        //    txtLoadedFileStatus.Text = txtLoadedFileStatus.Tag.ToString();
-        //    string inputFileName = txtContentDirectory.Text.Trim();
-        //    if (inputFileName.Length > 0 && (gedcom_ == null || !gedcom_.FileName.Equals(inputFileName)))
-        //    {
-        //        ShowBusy(busy: true);
-        //        gedcom_ = null;
-        //        gedcom_ = new GedcomFile551(inputFileName);
-        //        ShowBusy(busy: false);
-        //    }
-        //    if (null != gedcom_)
-        //    {
-        //        txtLoadedFileStatus.Text =
-        //            $"{gedcom_.Moniker} loaded\r\n" +
-        //            $"{gedcom_.Contents.Count} Contents\r\n" +
-        //            $"{gedcom_.Families.Count} Families\r\n";
-
-        //        txtRootIndividual.AutoCompleteSource = AutoCompleteSource.CustomSource;
-        //        txtRootIndividual.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
-        //        txtRootIndividual.AutoCompleteCustomSource.Clear();
-        //        string[] allNames = new string[gedcom_.Contents.Count];
-        //        int i = 0;
-        //        foreach (GcIndividual ind in gedcom_.Contents.Values)
-        //        {
-        //            allNames[i++] = ind.FullName;
-        //        }
-        //        txtRootIndividual.AutoCompleteCustomSource.AddRange(allNames);
-
-        //        DoRefreshSelection();
-        //    }
-        //}
         private void DoRenameForm()
         {
             if (!TrySelection()) return;
