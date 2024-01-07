@@ -31,6 +31,8 @@
             UpperPanel = new Panel();
             MediaDetailsLabel = new Label();
             LowerPanel = new Panel();
+            KeyboardShortcutsLabel = new Label();
+            cmdProceed = new Button();
             ProgressLabel = new Label();
             cmdCancel = new Button();
             txtNameInput = new TextBox();
@@ -42,7 +44,6 @@
             TvAllBacks = new TreeView();
             PicboxBack = new PictureBox();
             TxtRecent = new TextBox();
-            cmdProceed = new Button();
             UpperPanel.SuspendLayout();
             LowerPanel.SuspendLayout();
             MiddlePanel.SuspendLayout();
@@ -82,6 +83,7 @@
             // LowerPanel
             // 
             LowerPanel.BackColor = Color.Khaki;
+            LowerPanel.Controls.Add(KeyboardShortcutsLabel);
             LowerPanel.Controls.Add(cmdProceed);
             LowerPanel.Controls.Add(ProgressLabel);
             LowerPanel.Controls.Add(cmdCancel);
@@ -92,6 +94,26 @@
             LowerPanel.Name = "LowerPanel";
             LowerPanel.Size = new Size(1047, 121);
             LowerPanel.TabIndex = 6;
+            // 
+            // KeyboardShortcutsLabel
+            // 
+            KeyboardShortcutsLabel.AutoSize = true;
+            KeyboardShortcutsLabel.Font = new Font("Consolas", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            KeyboardShortcutsLabel.Location = new Point(9, 58);
+            KeyboardShortcutsLabel.Name = "KeyboardShortcutsLabel";
+            KeyboardShortcutsLabel.Size = new Size(147, 15);
+            KeyboardShortcutsLabel.TabIndex = 4;
+            KeyboardShortcutsLabel.Text = "{keyboard shortcuts}";
+            // 
+            // cmdProceed
+            // 
+            cmdProceed.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            cmdProceed.Location = new Point(918, 29);
+            cmdProceed.Name = "cmdProceed";
+            cmdProceed.Size = new Size(117, 35);
+            cmdProceed.TabIndex = 3;
+            cmdProceed.Text = "&Proceed";
+            cmdProceed.UseVisualStyleBackColor = true;
             // 
             // ProgressLabel
             // 
@@ -208,7 +230,7 @@
             BackDetailsLabel.AutoSize = true;
             BackDetailsLabel.BackColor = Color.Transparent;
             BackDetailsLabel.Font = new Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            BackDetailsLabel.Location = new Point(603, 49);
+            BackDetailsLabel.Location = new Point(603, 47);
             BackDetailsLabel.Margin = new Padding(0);
             BackDetailsLabel.Name = "BackDetailsLabel";
             BackDetailsLabel.Size = new Size(74, 13);
@@ -245,16 +267,6 @@
             TxtRecent.Size = new Size(265, 419);
             TxtRecent.TabIndex = 0;
             // 
-            // cmdProceed
-            // 
-            cmdProceed.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            cmdProceed.Location = new Point(918, 29);
-            cmdProceed.Name = "cmdProceed";
-            cmdProceed.Size = new Size(117, 35);
-            cmdProceed.TabIndex = 3;
-            cmdProceed.Text = "&Proceed";
-            cmdProceed.UseVisualStyleBackColor = true;
-            // 
             // RenameUI
             // 
             AutoScaleDimensions = new SizeF(9F, 21F);
@@ -270,7 +282,7 @@
             Name = "RenameUI";
             Text = "Rename";
             Load += RenameUI_Load;
-            KeyDown += RenameUI_KeyDown;
+            //KeyDown += RenameUI_KeyDown;
             KeyUp += RenameUI_KeyUp;
             Resize += RenameUI_Resize;
             UpperPanel.ResumeLayout(false);
@@ -309,5 +321,6 @@
         private PictureBox PicboxBack;
         private TextBox TxtRecent;
         private Button cmdProceed;
+        private Label KeyboardShortcutsLabel;
     }
 }

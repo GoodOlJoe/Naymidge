@@ -7,6 +7,7 @@ using System.Printing;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Windows.Documents;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace Naymidge
@@ -17,7 +18,7 @@ namespace Naymidge
         public Config Config { get; set; }
         private readonly List<FileInstruction> _Instructions;
         private int CurrentItem = 0;
-        private Label? KeyboardShortcutsHelp = null;
+        //private Label? KeyboardShortcutsHelp = null;
         private AutoCompleteStringCollection AllAutoCompleteTerms = new AutoCompleteStringCollection();
         private List<string> AllAcTermsList = new(1000);
         private Regex AutoCompleteParsePattern = new Regex(@"[A-Za-z]{3,}", RegexOptions.Compiled | RegexOptions.NonBacktracking);
@@ -50,8 +51,14 @@ namespace Naymidge
             Config = new Config();
             PlayerMain = new Player(Config);
             InitializeComponent();
-            flyleafHostMain.Player = PlayerMain;
 
+            cmdProceed.Click += CmdProceed_Click;
+
+            flyleafHostMain.Player = PlayerMain;
+            KeyboardShortcutsLabel.Text = @"Ctrl-D   Delete the item (mark for delete)        F11      Previous item
+Ctrl-B   Select a Back image to view              F12      Next item
+Ctrl-E   Edit the name                            <number> Reuse numbered name from the list
+                                                  <space>  Reuse most recent name";
             UpdateDisplays();
             DoLayout();
         }
@@ -108,17 +115,42 @@ namespace Naymidge
 
         private void BackDetailsLabel_TextChanged(object sender, EventArgs e) { SetBackDetailsLabelPosition(); }
         private void CmdCancel_Click(object sender, EventArgs e) { DoCancelButtonClicked(); }
+        private void CmdProceed_Click(object sender, EventArgs e) { DoProceedButtonClicked(); }
         private void InnerContainer_SplitterMoved(object sender, SplitterEventArgs e) { DoLayout(); }
         private void OuterContainer_SplitterMoved(object sender, SplitterEventArgs e) { DoLayout(); }
         //private void PicboxBack_SizeChanged(object sender, EventArgs e) { DoLayout(); }
-        private void RenameUI_KeyDown(object sender, KeyEventArgs e) { e.SuppressKeyPress = FormKeyDownHandled(e); }
         private void RenameUI_KeyUp(object sender, KeyEventArgs e) { e.SuppressKeyPress = FormKeyUpHandled(sender, e); }
         private void RenameUI_Load(object sender, EventArgs e) { DoLayout(); }
         private void RenameUI_Resize(object sender, EventArgs e) { DoLayout(); }
         private void TvAllBacks_AfterSelect(object sender, TreeViewEventArgs e) { DoBackImageSelectionChanged(e); }
         private void NameInput_KeyUp(object sender, KeyEventArgs e) { e.SuppressKeyPress = InputKeyUpHandled(sender, e); }
 
-        private void DoCancelButtonClicked() { Close(); }
+        private void DoCancelButtonClicked()
+        {
+            int delete = _Instructions.Where(inst => inst.Verb == FileInstructionVerb.Delete && !inst.Completed).Count();
+            int rename = _Instructions.Where(inst => inst.Verb == FileInstructionVerb.Rename && !inst.Completed).Count();
+            string msg = "";
+            string pronoun = rename + delete > 1 ? "those" : "that";
+            string changeNoun = rename + delete > 1 ? "changes" : "change";
+            string renameNoun = rename > 1 ? "renames" : "rename";
+            string deleteNoun = delete > 1 ? "deletes" : "delete";
+            if (rename > 0 && 0 == delete)
+                msg = $"You have {rename:N0} {renameNoun} pending, do you want to cancel and lose {pronoun}?";
+            else if (delete > 0 && 0 == rename)
+                msg = $"You have {delete:N0} {deleteNoun} pending, do you want to cancel and lose {pronoun}?";
+            else if (rename > 0 && delete > 0)
+                msg = $"You have {rename:N0} {renameNoun} and {delete:N0} {deleteNoun} pending, do you want to cancel and lose {pronoun}?";
+
+            if (string.IsNullOrEmpty(msg) || MessageBox.Show(msg, $"Cancel pending {changeNoun}?", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                Close();
+        }
+        private void DoProceedButtonClicked()
+        {
+            ActionUI ui = new();
+            PlayerMain.Stop(); // release lock on the currently displayed media file
+            ui.ProcessFileInstructions(_Instructions);
+        }
+
         private void DoLayout()
         {
             MiddlePanel.Height = ClientRectangle.Height - UpperPanel.Height - LowerPanel.Height;
@@ -132,18 +164,22 @@ namespace Naymidge
         }
         private bool FormKeyUpHandled(object sender, KeyEventArgs e)
         {
-            if (e.Control)
+            if (!(e.Control || e.Shift || e.Alt))
             {
-                KeyboardShortcuts(visible: false);
+                switch (e.KeyCode)
+                {
+                    case Keys.F11: CurrentItem = DecCurrent; SetUiToItem(CurrentItem); return true;
+                    case Keys.F12: CurrentItem = IncCurrent; SetUiToItem(CurrentItem); return true;
+                }
+            }
+            else if (e.Control)
+            {
                 switch (e.KeyCode)
                 {
                     case Keys.E: txtNameInput.Focus(); return true; // ctrl e - focus on name input field
                     case Keys.B: TvAllBacks.Focus(); return true;   // ctrl b - focus on back image names
-                    case Keys.Left: CurrentItem = DecCurrent; SetUiToItem(CurrentItem); return true;
-                    case Keys.Right: CurrentItem = IncCurrent; SetUiToItem(CurrentItem); return true;
                 }
             }
-
             return false;
         }
         private const string ReuseLastNameShortcut = "ÿ";
@@ -257,56 +293,13 @@ namespace Naymidge
         {
             DockUpperRight(BackDetailsLabel, PicboxBack);
         }
-        private void KeyboardShortcuts(bool visible)
-        {
-            Control p = TxtRecent; // UpperPanel; // parent
-            if (visible)
-            {
-                if (null == KeyboardShortcutsHelp)
-                {
-                    KeyboardShortcutsHelp = new()
-                    {
-                        Font = new System.Drawing.Font(new FontFamily(System.Drawing.Text.GenericFontFamilies.Monospace), Font.Size),
-                        BackColor = Color.AntiqueWhite,
-                        Text = @"
-  Keyboard Shortcuts
-  ------------------
-  Ctrl-D     Delete the item (mark for delete)
-  Ctrl-B     Select a Back image to view
-  Ctrl-E     Edit the name
-  Ctrl-Left  Previous item
-  Ctrl-Right Next item
-  <number>   Reuse numbered name from the list
-"
-                    };
-                    p.Controls.Add(KeyboardShortcutsHelp);
-                }
-                KeyboardShortcutsHelp.Top = 10;
-                KeyboardShortcutsHelp.Left = 10;
-                KeyboardShortcutsHelp.Width = p.ClientRectangle.Width - 20;
-                KeyboardShortcutsHelp.Height = p.ClientRectangle.Height - 20;
-                KeyboardShortcutsHelp.Visible = true;
-            }
-            else
-            {
-                if (null != KeyboardShortcutsHelp)
-                {
-                    KeyboardShortcutsHelp.Visible = false;
-                }
-            }
-        }
-        private bool FormKeyDownHandled(KeyEventArgs e)
-        {
-            if (e.Control) KeyboardShortcuts(visible: true);
-            return false;
-        }
         private void UpdateProgressLabel()
         {
             ProgressLabel.Text = "";
             if (_Instructions == null || _Instructions.Count == 0) return;
             int undetermined = _Instructions.Where(inst => inst.Verb == FileInstructionVerb.Undetermined).Count();
-            int delete = _Instructions.Where(inst => inst.Verb == FileInstructionVerb.Delete).Count();
-            int rename = _Instructions.Where(inst => inst.Verb == FileInstructionVerb.Rename).Count();
+            int delete = _Instructions.Where(inst => inst.Verb == FileInstructionVerb.Delete && !inst.Completed).Count();
+            int rename = _Instructions.Where(inst => inst.Verb == FileInstructionVerb.Rename && !inst.Completed).Count();
 
 
             ProgressLabel.Text =
@@ -315,6 +308,10 @@ rename    {rename,6:N0}
 no action {undetermined,6:N0}
 ----------------
           {_Instructions.Count,6:N0}";
+
+            ProgressLabel.BackColor = 0 == undetermined ?
+                Color.PaleGreen :
+                Color.Transparent;
         }
         private string? GetNumberedRecentEntry(string entryNumber)
         {

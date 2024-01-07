@@ -9,6 +9,7 @@
     internal class FileInstruction(string fqn)
     {
         public string FQN { get; } = fqn;
+        public bool Completed = false;
         public string DirName
         {
             get

@@ -32,7 +32,11 @@ namespace Naymidge
         {
             string? dir = Path.GetDirectoryName(instruction.FQN);
             dir = string.IsNullOrEmpty(dir) ? "" : dir;
-            return Path.Combine(dir, instruction.NewFileName);
+
+            string? ext = Path.GetExtension(instruction.FQN);
+            ext = string.IsNullOrEmpty(ext) ? "" : ext;
+
+            return Path.Combine(dir, $"{instruction.NewFileName}{ext}");
         }
         private static string SerialFQN(string FQN)
         {
