@@ -61,6 +61,7 @@ namespace Naymidge
             if (!TrySelection()) return;
             RenameUI frm = new(_Scope);
             frm.ShowDialog();
+            DoRefreshSelection();
         }
         private void DoPickContentDirectory()
         {
