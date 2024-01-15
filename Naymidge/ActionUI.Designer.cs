@@ -83,6 +83,7 @@
             TextStatus.Multiline = true;
             TextStatus.Name = "TextStatus";
             TextStatus.ReadOnly = true;
+            TextStatus.ScrollBars = ScrollBars.Vertical;
             TextStatus.Size = new Size(913, 482);
             TextStatus.TabIndex = 3;
             // 
