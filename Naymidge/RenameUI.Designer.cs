@@ -32,6 +32,7 @@
             lblPositionDisplay = new Label();
             MediaDetailsLabel = new Label();
             LowerPanel = new Panel();
+            FilenameCharCountLabel = new Label();
             label1 = new Label();
             KeyboardShortcutsLabel = new Label();
             cmdProceed = new Button();
@@ -98,6 +99,7 @@
             // LowerPanel
             // 
             LowerPanel.BackColor = Color.Khaki;
+            LowerPanel.Controls.Add(FilenameCharCountLabel);
             LowerPanel.Controls.Add(label1);
             LowerPanel.Controls.Add(KeyboardShortcutsLabel);
             LowerPanel.Controls.Add(cmdProceed);
@@ -110,6 +112,16 @@
             LowerPanel.Name = "LowerPanel";
             LowerPanel.Size = new Size(1047, 121);
             LowerPanel.TabIndex = 6;
+            // 
+            // FilenameCharCountLabel
+            // 
+            FilenameCharCountLabel.AutoSize = true;
+            FilenameCharCountLabel.Font = new Font("Consolas", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            FilenameCharCountLabel.Location = new Point(8, 32);
+            FilenameCharCountLabel.Name = "FilenameCharCountLabel";
+            FilenameCharCountLabel.Size = new Size(14, 15);
+            FilenameCharCountLabel.TabIndex = 7;
+            FilenameCharCountLabel.Text = "n";
             // 
             // label1
             // 
@@ -171,6 +183,7 @@
             txtNameInput.Name = "txtNameInput";
             txtNameInput.Size = new Size(691, 46);
             txtNameInput.TabIndex = 6;
+            txtNameInput.TextChanged += txtNameInput_TextChanged;
             // 
             // MiddlePanel
             // 
@@ -266,7 +279,7 @@
             BackDetailsLabel.AutoSize = true;
             BackDetailsLabel.BackColor = Color.Transparent;
             BackDetailsLabel.Font = new Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            BackDetailsLabel.Location = new Point(603, 40);
+            BackDetailsLabel.Location = new Point(603, 37);
             BackDetailsLabel.Margin = new Padding(0);
             BackDetailsLabel.Name = "BackDetailsLabel";
             BackDetailsLabel.Size = new Size(74, 13);
@@ -280,7 +293,7 @@
             TvAllBacks.Location = new Point(0, 16);
             TvAllBacks.Name = "TvAllBacks";
             TvAllBacks.ShowNodeToolTips = true;
-            TvAllBacks.Size = new Size(287, 115);
+            TvAllBacks.Size = new Size(287, 109);
             TvAllBacks.TabIndex = 7;
             TvAllBacks.AfterSelect += TvAllBacks_AfterSelect;
             // 
@@ -361,5 +374,6 @@
         private Label lblPositionDisplay;
         private Label label1;
         private Label BackImageAccessLabel;
+        private Label FilenameCharCountLabel;
     }
 }

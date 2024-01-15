@@ -4,6 +4,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Windows.Media.Animation;
 
 namespace Naymidge
 {
@@ -17,6 +18,8 @@ namespace Naymidge
         private const string ReuseLastNameShortcut = "ÿ";
         private int DecCurrent => CurrentItem == 0 ? _Instructions.Count - 1 : --CurrentItem;
         private int IncCurrent => CurrentItem >= _Instructions.Count - 1 ? 0 : ++CurrentItem;
+        private const int _MaxFQNLength = 258; // windows limit
+        private int _MaxFileNameLength = _MaxFQNLength; // adjusted for each file based on path
 
         public RenameUI(ProcessingScope scope)
         {
@@ -70,6 +73,16 @@ Alt-E     Edit the name                         F11      Previous item
             LayoutPositionDisplay();
             OpenMedia(PlayerMain, CurrentItem);
             PopulateBackImage(_Instructions[CurrentItem].FQN);
+            UpdateFilenameCharCounter();
+        }
+        private void CalculateMaxFileNameLength()
+        {
+            string? path = Path.GetDirectoryName(_Instructions[CurrentItem].FQN);
+            int pathLength = string.IsNullOrEmpty(path) ? 0 : path.Length;
+            string? ext = Path.GetExtension(_Instructions[CurrentItem].FQN);
+            int extLength = string.IsNullOrEmpty(ext) ? 0 : ext.Length;
+            _MaxFileNameLength = _MaxFQNLength - pathLength - extLength;
+
         }
         private void PopulateBackImage(string frontImageFQN)
         {
@@ -295,6 +308,13 @@ no action {undetermined,6:N0}
                 Color.PaleGreen :
                 Color.Transparent;
         }
+        private void UpdateFilenameCharCounter()
+        {
+            CalculateMaxFileNameLength();
+            int remaining = _MaxFileNameLength - txtNameInput.Text.Trim().Length;
+            FilenameCharCountLabel.Text = remaining.ToString();
+            txtNameInput.BackColor = remaining < 0 ? Color.MediumVioletRed : Color.White;
+        }
         private string? GetNumberedRecentEntry(string entryNumber)
         {
             char[] delims = ['\r', '\n'];
@@ -345,5 +365,7 @@ no action {undetermined,6:N0}
             TxtRecent.SelectionStart = TxtRecent.Text.Length;
             TxtRecent.ScrollToCaret();
         }
+
+        private void txtNameInput_TextChanged(object sender, EventArgs e) { UpdateFilenameCharCounter(); }
     }
 }
