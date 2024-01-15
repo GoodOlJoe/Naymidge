@@ -4,7 +4,6 @@ using System.Data;
 using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Windows.Media.Animation;
 
 namespace Naymidge
 {
@@ -137,6 +136,7 @@ Alt-E     Edit the name                         F11      Previous item
         private void TvAllBacks_AfterSelect(object sender, TreeViewEventArgs e) { DoBackImageSelectionChanged(e); }
         private void RenameUI_KeyUp(object sender, KeyEventArgs e) { e.Handled = FormKeyUpHandled(e); }
         private void NameInput_KeyPress(object? sender, KeyPressEventArgs e) { e.Handled = InputKeyPressHandled(e); }
+        private void txtNameInput_TextChanged(object sender, EventArgs e) { UpdateFilenameCharCounter(); }
         private void AddRecentEntryToUi(string entry) { AddRecentEntryToHistory(entry); }
         private void SetBackDetailsLabelPosition() { DockUpperRight(BackDetailsLabel, PicboxBack); }
         private void DoCancelButtonClicked()
@@ -365,7 +365,5 @@ no action {undetermined,6:N0}
             TxtRecent.SelectionStart = TxtRecent.Text.Length;
             TxtRecent.ScrollToCaret();
         }
-
-        private void txtNameInput_TextChanged(object sender, EventArgs e) { UpdateFilenameCharCounter(); }
     }
 }
