@@ -13,7 +13,12 @@ namespace Naymidge
         }
         private void CmdClose_Click(object? sender, EventArgs e) { DoCloseButtonClicked(); }
         private void CmdCancel_Click(object? sender, EventArgs e) { DoCancelButtonClicked(); }
-        private void ActionUI_Load(object sender, EventArgs e) { WindowState = FormWindowState.Maximized; }
+        private void ActionUI_Load(object sender, EventArgs e)
+        {
+            TextErrors.Visible = false;
+            WindowState = FormWindowState.Maximized;
+            DoLayout();
+        }
         private void DoCloseButtonClicked() { Close(); }
         private void DoCancelButtonClicked() { _UserCancel = true; }
         internal void ProcessFileInstructions(List<FileInstruction> instructions)
@@ -76,14 +81,22 @@ namespace Naymidge
                 }
                 catch (Exception ex)
                 {
-                    TextStatus.Text += $"  *** ERROR {delete.FileName}\r\n{ex.Message}\r\n";
+                    LogError($"  *** ERROR {delete.FileName}\r\n{ex.Message}");
                 }
                 TextStatus.SelectionStart = TextStatus.Text.Length;
                 TextStatus.ScrollToCaret();
                 ProgressBar.Value = 0;
             }
         }
-
+        private void LogError(string msg)
+        {
+            if (!TextErrors.Visible)
+            {
+                TextErrors.Visible = true;
+                DoLayout();
+            }
+            TextErrors.Text += $"{msg}\r\n";
+        }
         private void DoRenames(IEnumerable<FileInstruction> renames)
         {
             string spacing = TextStatus.Text.Length > 0 ? "\r\n\r\n" : "";
@@ -99,12 +112,29 @@ namespace Naymidge
                 }
                 catch (Exception ex)
                 {
-                    TextStatus.Text += $"  *** ERROR {rename.FileName}\r\n{ex.Message}\r\n";
+                    LogError($"  *** ERROR {rename.FileName}\r\nrenaming to {rename.NewFileName} (possibly with added serial number)\r\n{ex.Message}");
                 }
                 TextStatus.SelectionStart = TextStatus.Text.Length;
                 TextStatus.ScrollToCaret();
                 ProgressBar.Value = 0;
             }
+        }
+
+        private void ActionUI_Resize(object sender, EventArgs e) { DoLayout(); }
+        private void DoLayout()
+        {
+            TextStatus.Location = new Point(0, 0);
+            TextStatus.Width = TextStatus.Parent != null ? TextStatus.Parent.ClientRectangle.Width : ClientRectangle.Width;
+            if (TextErrors.Visible)
+            {
+                TextStatus.Height = TextStatus.Parent != null ? TextStatus.Parent.ClientRectangle.Height / 20 * 15 : ClientRectangle.Height / 20 * 15;
+                TextErrors.Location = new Point(0, TextStatus.Bottom);
+                TextErrors.Width = TextStatus.Width;
+                TextErrors.Height = TextStatus.Height / 3;
+
+            }
+            else
+                TextStatus.Height = TextStatus.Parent != null ? TextStatus.Parent.ClientRectangle.Height : ClientRectangle.Height;
         }
     }
 }
