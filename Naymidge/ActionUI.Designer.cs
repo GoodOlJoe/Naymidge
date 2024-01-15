@@ -32,8 +32,11 @@
             ProgressBar = new ToolStripProgressBar();
             cmdClose = new Button();
             cmdCancel = new Button();
+            TextBoxPanel = new Panel();
+            TextErrors = new TextBox();
             TextStatus = new TextBox();
             statusStrip1.SuspendLayout();
+            TextBoxPanel.SuspendLayout();
             SuspendLayout();
             // 
             // statusStrip1
@@ -74,25 +77,50 @@
             cmdCancel.UseVisualStyleBackColor = true;
             cmdCancel.Click += CmdCancel_Click;
             // 
+            // TextBoxPanel
+            // 
+            TextBoxPanel.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            TextBoxPanel.Controls.Add(TextErrors);
+            TextBoxPanel.Controls.Add(TextStatus);
+            TextBoxPanel.Location = new Point(8, 9);
+            TextBoxPanel.Name = "TextBoxPanel";
+            TextBoxPanel.Size = new Size(913, 482);
+            TextBoxPanel.TabIndex = 4;
+            // 
+            // TextErrors
+            // 
+            TextErrors.Anchor = AnchorStyles.None;
+            TextErrors.BackColor = Color.FromArgb(255, 192, 192);
+            TextErrors.Font = new Font("Consolas", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            TextErrors.ForeColor = Color.FromArgb(192, 0, 0);
+            TextErrors.Location = new Point(0, 319);
+            TextErrors.Multiline = true;
+            TextErrors.Name = "TextErrors";
+            TextErrors.ReadOnly = true;
+            TextErrors.ScrollBars = ScrollBars.Vertical;
+            TextErrors.Size = new Size(913, 160);
+            TextErrors.TabIndex = 5;
+            TextErrors.Text = "asdf";
+            // 
             // TextStatus
             // 
-            TextStatus.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            TextStatus.Anchor = AnchorStyles.None;
             TextStatus.BackColor = Color.FromArgb(255, 245, 227);
             TextStatus.Font = new Font("Consolas", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            TextStatus.Location = new Point(8, 9);
+            TextStatus.Location = new Point(0, 0);
             TextStatus.Multiline = true;
             TextStatus.Name = "TextStatus";
             TextStatus.ReadOnly = true;
             TextStatus.ScrollBars = ScrollBars.Vertical;
-            TextStatus.Size = new Size(913, 482);
-            TextStatus.TabIndex = 3;
+            TextStatus.Size = new Size(913, 313);
+            TextStatus.TabIndex = 4;
             // 
             // ActionUI
             // 
             AutoScaleDimensions = new SizeF(9F, 21F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(933, 566);
-            Controls.Add(TextStatus);
+            Controls.Add(TextBoxPanel);
             Controls.Add(cmdCancel);
             Controls.Add(cmdClose);
             Controls.Add(statusStrip1);
@@ -101,8 +129,11 @@
             Name = "ActionUI";
             Text = "Process File Changes";
             Load += ActionUI_Load;
+            Resize += ActionUI_Resize;
             statusStrip1.ResumeLayout(false);
             statusStrip1.PerformLayout();
+            TextBoxPanel.ResumeLayout(false);
+            TextBoxPanel.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -113,6 +144,8 @@
         private Button cmdClose;
         private Button cmdCancel;
         private ToolStripProgressBar ProgressBar;
+        private Panel TextBoxPanel;
+        private TextBox TextErrors;
         private TextBox TextStatus;
     }
 }
