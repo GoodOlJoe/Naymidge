@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
+using MetadataExtractor;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
 
 namespace Naymidge
@@ -25,7 +26,7 @@ namespace Naymidge
         private class FactSource
         {
             public string Descriptor = "";
-            public List<FactSourceCandidate> Candidates = new List<FactSourceCandidate>();
+            public List<FactSourceCandidate> CandidateSources = new List<FactSourceCandidate>();
         }
         /*
          * The Catalog is a list of facts we're interested in gathering for this image, plus one
@@ -42,7 +43,7 @@ namespace Naymidge
                 new FactSource
                 {
                     Descriptor = "Date Taken",
-                    Candidates = new List<FactSourceCandidate>()
+                    CandidateSources = new List<FactSourceCandidate>()
                     {
                         new FactSourceCandidate
                         {
@@ -76,7 +77,7 @@ namespace Naymidge
                 new FactSource
                 {
                     Descriptor = "Time Zone Taken",
-                    Candidates = new List<FactSourceCandidate>()
+                    CandidateSources = new List<FactSourceCandidate>()
                     {
                         new FactSourceCandidate
                         {
@@ -98,7 +99,7 @@ namespace Naymidge
                 new FactSource
                 {
                     Descriptor = "Camera Description",
-                    Candidates = new List<FactSourceCandidate>()
+                    CandidateSources = new List<FactSourceCandidate>()
                     {
                         new FactSourceCandidate
                         {
@@ -120,7 +121,7 @@ namespace Naymidge
                 new FactSource
                 {
                     Descriptor = "Latitude",
-                    Candidates = new List<FactSourceCandidate>()
+                    CandidateSources = new List<FactSourceCandidate>()
                     {
                         new FactSourceCandidate
                         {
@@ -136,7 +137,7 @@ namespace Naymidge
                 new FactSource
                 {
                     Descriptor = "Longitude",
-                    Candidates = new List<FactSourceCandidate>()
+                    CandidateSources = new List<FactSourceCandidate>()
                     {
                         new FactSourceCandidate
                         {
@@ -152,7 +153,7 @@ namespace Naymidge
                 new FactSource
                 {
                     Descriptor = "Image Direction",
-                    Candidates = new List<FactSourceCandidate>()
+                    CandidateSources = new List<FactSourceCandidate>()
                     {
                         new FactSourceCandidate
                         {
@@ -168,7 +169,7 @@ namespace Naymidge
                 new FactSource
                 {
                     Descriptor = "Unique ID",
-                    Candidates = new List<FactSourceCandidate>()
+                    CandidateSources = new List<FactSourceCandidate>()
                     {
                         new FactSourceCandidate
                         {
@@ -190,20 +191,53 @@ namespace Naymidge
                 finst.MetadataDirectories == null ||
                 string.IsNullOrEmpty(descriptor) ||
                 !Catalog.ContainsKey(descriptor) ||
-                null == Catalog[descriptor].Candidates ||
-                0 == Catalog[descriptor].Candidates.Count
+                null == Catalog[descriptor].CandidateSources ||
+                0 == Catalog[descriptor].CandidateSources.Count
             )
             {
                 return retval;
             }
 
-            List<FactSourceCandidate> candidates = Catalog[descriptor].Candidates;
+            List<FactSourceCandidate> candidateSources = Catalog[descriptor].CandidateSources;
 
-            // it's not this code, this is just a stub to remember how the directory/tag structure works.
             // go through the Catalog's list of order sources for this descriptor, try to find a match
-            //foreach (var dir in finst.MetadataDirectories )
-            //    foreach (var tag in dir.Tags)
-            //        Debug.WriteLine($"{dir.Name} - {tag.Name} = {tag.Description}");
+            foreach (FactSourceCandidate candidateSource in candidateSources)
+            {
+                switch (candidateSource.FactSourceCandidateType)
+                {
+                    case FactSourceCandidateType.MetaData:
+                        // this candidate source is a metadata tag
+                        foreach (MetadataExtractor.Directory dir in finst.MetadataDirectories.Where(d => d.Name.Equals(candidateSource.Directory)))
+                        {
+                            foreach (Tag tag in dir.Tags.Where(t => t.Name.Equals(candidateSource.Name)))
+                            {
+                                if (!string.IsNullOrEmpty(tag.Description))
+                                {
+                                    retval = tag.Description;
+                                    break;
+                                }
+                            }
+                            if (!string.IsNullOrEmpty(retval)) break;
+                        }
+                        break;
+
+                    case FactSourceCandidateType.FileInfo:
+                        // this candidate source is a file attribute
+                        FileInfo fi = new FileInfo(finst.FQN);
+                        switch (candidateSource.Name)
+                        {
+                            // these case values have to match what is in the FactSourceCandidate specification.
+                            // Basically a text mapping of property name to actual compiled property. So only
+                            // the properties that we know are specified in some FactSourceCandidate need to be
+                            // accounted for here.
+                            case "CreationTime":
+                                fi.CreationTime.ToString("yyyy MM dd HH:mm");
+                                break;
+                        }
+                        break;
+                }
+                if (!string.IsNullOrEmpty(retval)) break;
+            }
 
             return retval;
         }

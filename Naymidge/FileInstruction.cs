@@ -1,4 +1,7 @@
-﻿namespace Naymidge
+﻿using MetadataExtractor;
+using System.Linq;
+
+namespace Naymidge
 {
     internal enum FileInstructionVerb
     {
@@ -6,19 +9,31 @@
         Rename,
         Delete
     }
-    internal class FileInstruction(string fqn)
+    internal class FileInstruction
     {
+        private string _FQN;
+        public FileInstruction(string fqn)
+        {
+            _FQN = fqn;
+            MetadataDirectories = ImageMetadataReader.ReadMetadata(fqn).ToList();
+            DateTaken = InterestingImageFactCatalog.GetValueFor("Date Taken", this);
+            GPSTimeZoneTaken = InterestingImageFactCatalog.GetValueFor("Time Zone Taken", this);
+            GPSLat = InterestingImageFactCatalog.GetValueFor("Latitude", this);
+            GPSLong = InterestingImageFactCatalog.GetValueFor("Longitude", this);
+            CameraDescription = InterestingImageFactCatalog.GetValueFor("Camera Description", this);
+            GPSImageDirection = InterestingImageFactCatalog.GetValueFor("Image Direction", this);
+        }
         public List<MetadataExtractor.Directory>? MetadataDirectories = null;
 
         // image file facts harvested mostly from meta data tags
         public string DateTaken = "";
-        public float GPSTimeZoneTaken = 0.0f;
+        public string GPSTimeZoneTaken = "";
         public string GPSLat = "";
         public string GPSLong = "";
         public string CameraDescription = "";
-        public float GPSImageDirection = -1f;
+        public string GPSImageDirection = "";
 
-        public string FQN { get; } = fqn;
+        public string FQN => _FQN;
         public bool Completed = false;
         public string DirName
         {
