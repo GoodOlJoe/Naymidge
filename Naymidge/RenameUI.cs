@@ -1,7 +1,9 @@
 using FlyleafLib;
 using FlyleafLib.MediaPlayer;
+using MetadataExtractor;
 using System.Data;
 using System.Diagnostics;
+using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -67,12 +69,24 @@ Alt-E     Edit the name                         F11      Previous item
                 MediaDetailsLabel.Text = "";
                 return;
             }
-            MediaDetailsLabel.Text = _Instructions[CurrentItem].FQN;
+            UpdateMediaDetails();
             lblPositionDisplay.Text = $"{CurrentItem + 1}/{_Instructions.Count}";
             LayoutPositionDisplay();
             OpenMedia(PlayerMain, CurrentItem);
             PopulateBackImage(_Instructions[CurrentItem].FQN);
             UpdateFilenameCharCounter();
+        }
+        private void UpdateMediaDetails()
+        {
+            FileInstruction finst = _Instructions[CurrentItem];
+
+            finst.MetadataDirectories = ImageMetadataReader.ReadMetadata(finst.FQN).ToList();
+            //IEnumerable<MetadataExtractor.Directory> directories = ImageMetadataReader.ReadMetadata(finst.FQN);
+            //foreach (var dir in directories)
+            //    foreach (var tag in dir.Tags)
+            //        Debug.WriteLine($"{dir.Name} - {tag.Name} = {tag.Description}");
+
+            MediaDetailsLabel.Text = finst.FQN;
         }
         private void CalculateMaxFileNameLength()
         {
@@ -98,7 +112,7 @@ Alt-E     Edit the name                         F11      Previous item
             string backWildcard = $"{match.Groups["prefix"].Value}2*{ext}";
             Regex rgxMatchingBacks = new($"^([A-Za-z]+)1(.+)({ext})$");
             List<string> matchingBacks =
-                [.. Directory.EnumerateFiles(dname, backWildcard, SearchOption.TopDirectoryOnly)];
+                [.. System.IO.Directory.EnumerateFiles(dname, backWildcard, SearchOption.TopDirectoryOnly)];
 
             // list all matching backs
             TvAllBacks.Nodes.Clear();

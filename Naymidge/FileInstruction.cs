@@ -8,6 +8,16 @@
     }
     internal class FileInstruction(string fqn)
     {
+        public List<MetadataExtractor.Directory>? MetadataDirectories = null;
+
+        // image file facts harvested mostly from meta data tags
+        public string DateTaken = "";
+        public float GPSTimeZoneTaken = 0.0f;
+        public string GPSLat = "";
+        public string GPSLong = "";
+        public string CameraDescription = "";
+        public float GPSImageDirection = -1f;
+
         public string FQN { get; } = fqn;
         public bool Completed = false;
         public string DirName
