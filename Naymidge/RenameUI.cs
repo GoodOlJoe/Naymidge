@@ -4,6 +4,7 @@ using MetadataExtractor;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
+using System.Linq.Expressions;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -87,6 +88,12 @@ Alt-E     Edit the name                         F11      Previous item
             string MapURL = string.IsNullOrEmpty(finst.MapURL) ? "" : $"  Location: {finst.MapURL}";
             MapLinkLabel.Tag = finst.MapURL;
             MapLinkLabel.Visible = !string.IsNullOrEmpty(finst.MapURL);
+
+            IEnumerable<MetadataExtractor.Directory> directories = ImageMetadataReader.ReadMetadata(finst.FQN);
+            foreach (var dir in directories)
+                foreach (var tag in dir.Tags)
+                    Debug.WriteLine($"{dir.Name} - {tag.Name} = {tag.Description}");
+
         }
         private void CalculateMaxFileNameLength()
         {
@@ -134,7 +141,18 @@ Alt-E     Edit the name                         F11      Previous item
         {
             if (player == null) return;
             if (index < 0 || index > _Instructions.Count) return;
+            player.Rotation = RotationNeeded(_Instructions[index].RequiredRotationToNormal);
             player.OpenAsync(_Instructions[index].FQN);
+        }
+        private uint RotationNeeded(string rot)
+        {
+            switch (rot)
+            {
+                case "180": return 180;
+                case "90": return 90;
+                case "270":return 270;
+                default: return 0;
+            }
         }
         private void BackDetailsLabel_TextChanged(object sender, EventArgs e) { SetBackDetailsLabelPosition(); }
         private void CmdCancel_Click(object sender, EventArgs e) { DoCancelButtonClicked(); }
