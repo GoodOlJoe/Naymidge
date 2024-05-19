@@ -1,7 +1,9 @@
 using FlyleafLib;
 using FlyleafLib.MediaPlayer;
+using MetadataExtractor;
 using System.Data;
 using System.Diagnostics;
+using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -49,6 +51,7 @@ namespace Naymidge
             PlayerMain = new Player(Config);
             InitializeComponent();
 
+            MapLinkLabel.LinkClicked += MapLinkLabel_LinkClicked;
             txtNameInput.KeyPress += NameInput_KeyPress;
             cmdProceed.Click += CmdProceed_Click;
 
@@ -67,12 +70,23 @@ Alt-E     Edit the name                         F11      Previous item
                 MediaDetailsLabel.Text = "";
                 return;
             }
-            MediaDetailsLabel.Text = _Instructions[CurrentItem].FQN;
+            UpdateMediaDetails();
             lblPositionDisplay.Text = $"{CurrentItem + 1}/{_Instructions.Count}";
             LayoutPositionDisplay();
             OpenMedia(PlayerMain, CurrentItem);
             PopulateBackImage(_Instructions[CurrentItem].FQN);
             UpdateFilenameCharCounter();
+        }
+        private void UpdateMediaDetails()
+        {
+            FileInstruction finst = _Instructions[CurrentItem];
+
+            string DateTaken = string.IsNullOrEmpty(finst.DateTaken) ? "" : $"\nTaken: {finst.DateTaken}";
+            MediaDetailsLabel.Text = $"{finst.FQN}{DateTaken}";
+
+            string MapURL = string.IsNullOrEmpty(finst.MapURL) ? "" : $"  Location: {finst.MapURL}";
+            MapLinkLabel.Tag = finst.MapURL;
+            MapLinkLabel.Visible = !string.IsNullOrEmpty(finst.MapURL);
         }
         private void CalculateMaxFileNameLength()
         {
@@ -98,7 +112,7 @@ Alt-E     Edit the name                         F11      Previous item
             string backWildcard = $"{match.Groups["prefix"].Value}2*{ext}";
             Regex rgxMatchingBacks = new($"^([A-Za-z]+)1(.+)({ext})$");
             List<string> matchingBacks =
-                [.. Directory.EnumerateFiles(dname, backWildcard, SearchOption.TopDirectoryOnly)];
+                [.. System.IO.Directory.EnumerateFiles(dname, backWildcard, SearchOption.TopDirectoryOnly)];
 
             // list all matching backs
             TvAllBacks.Nodes.Clear();
@@ -137,6 +151,13 @@ Alt-E     Edit the name                         F11      Previous item
         private void RenameUI_KeyUp(object sender, KeyEventArgs e) { e.Handled = FormKeyUpHandled(e); }
         private void NameInput_KeyPress(object? sender, KeyPressEventArgs e) { e.Handled = InputKeyPressHandled(e); }
         private void txtNameInput_TextChanged(object sender, EventArgs e) { UpdateFilenameCharCounter(); }
+        private void MapLinkLabel_LinkClicked(object? sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (null == MapLinkLabel.Tag) return;
+            string? target = MapLinkLabel.Tag.ToString();
+            if (string.IsNullOrEmpty(target)) return;
+            Process.Start(new ProcessStartInfo(target) { UseShellExecute = true });
+        }
         private void AddRecentEntryToUi(string entry) { AddRecentEntryToHistory(entry); }
         private void SetBackDetailsLabelPosition() { DockUpperRight(BackDetailsLabel, PicboxBack); }
         private void DoCancelButtonClicked()
@@ -365,5 +386,6 @@ no action {undetermined,6:N0}
             TxtRecent.SelectionStart = TxtRecent.Text.Length;
             TxtRecent.ScrollToCaret();
         }
+
     }
 }

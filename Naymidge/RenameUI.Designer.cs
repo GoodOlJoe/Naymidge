@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             UpperPanel = new Panel();
+            MapLinkLabel = new LinkLabel();
             lblPositionDisplay = new Label();
             MediaDetailsLabel = new Label();
             LowerPanel = new Panel();
@@ -65,21 +66,33 @@
             // UpperPanel
             // 
             UpperPanel.BackColor = Color.RosyBrown;
+            UpperPanel.Controls.Add(MapLinkLabel);
             UpperPanel.Controls.Add(lblPositionDisplay);
             UpperPanel.Controls.Add(MediaDetailsLabel);
             UpperPanel.Dock = DockStyle.Top;
             UpperPanel.Location = new Point(0, 0);
             UpperPanel.Margin = new Padding(4);
             UpperPanel.Name = "UpperPanel";
-            UpperPanel.Size = new Size(1047, 65);
+            UpperPanel.Size = new Size(1071, 65);
             UpperPanel.TabIndex = 4;
+            // 
+            // MapLinkLabel
+            // 
+            MapLinkLabel.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            MapLinkLabel.AutoSize = true;
+            MapLinkLabel.Location = new Point(988, 37);
+            MapLinkLabel.Name = "MapLinkLabel";
+            MapLinkLabel.Size = new Size(69, 21);
+            MapLinkLabel.TabIndex = 2;
+            MapLinkLabel.TabStop = true;
+            MapLinkLabel.Text = "Location";
             // 
             // lblPositionDisplay
             // 
             lblPositionDisplay.Anchor = AnchorStyles.None;
             lblPositionDisplay.AutoSize = true;
             lblPositionDisplay.Font = new Font("Segoe UI", 20.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            lblPositionDisplay.Location = new Point(865, 0);
+            lblPositionDisplay.Location = new Point(877, 0);
             lblPositionDisplay.Name = "lblPositionDisplay";
             lblPositionDisplay.Size = new Size(182, 37);
             lblPositionDisplay.TabIndex = 1;
@@ -110,7 +123,7 @@
             LowerPanel.Location = new Point(0, 500);
             LowerPanel.Margin = new Padding(4);
             LowerPanel.Name = "LowerPanel";
-            LowerPanel.Size = new Size(1047, 121);
+            LowerPanel.Size = new Size(1071, 121);
             LowerPanel.TabIndex = 6;
             // 
             // FilenameCharCountLabel
@@ -146,7 +159,7 @@
             // cmdProceed
             // 
             cmdProceed.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            cmdProceed.Location = new Point(918, 29);
+            cmdProceed.Location = new Point(942, 29);
             cmdProceed.Name = "cmdProceed";
             cmdProceed.Size = new Size(117, 35);
             cmdProceed.TabIndex = 3;
@@ -158,7 +171,7 @@
             ProgressLabel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             ProgressLabel.AutoSize = true;
             ProgressLabel.Font = new Font("Consolas", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            ProgressLabel.Location = new Point(769, 9);
+            ProgressLabel.Location = new Point(793, 9);
             ProgressLabel.Name = "ProgressLabel";
             ProgressLabel.Size = new Size(70, 15);
             ProgressLabel.TabIndex = 2;
@@ -167,7 +180,7 @@
             // cmdCancel
             // 
             cmdCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            cmdCancel.Location = new Point(917, 74);
+            cmdCancel.Location = new Point(941, 74);
             cmdCancel.Name = "cmdCancel";
             cmdCancel.Size = new Size(117, 35);
             cmdCancel.TabIndex = 1;
@@ -181,7 +194,7 @@
             txtNameInput.Font = new Font("Segoe UI", 21.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
             txtNameInput.Location = new Point(72, 9);
             txtNameInput.Name = "txtNameInput";
-            txtNameInput.Size = new Size(691, 46);
+            txtNameInput.Size = new Size(715, 46);
             txtNameInput.TabIndex = 6;
             txtNameInput.TextChanged += txtNameInput_TextChanged;
             // 
@@ -279,7 +292,7 @@
             BackDetailsLabel.AutoSize = true;
             BackDetailsLabel.BackColor = Color.Transparent;
             BackDetailsLabel.Font = new Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            BackDetailsLabel.Location = new Point(603, 37);
+            BackDetailsLabel.Location = new Point(603, 34);
             BackDetailsLabel.Margin = new Padding(0);
             BackDetailsLabel.Name = "BackDetailsLabel";
             BackDetailsLabel.Size = new Size(74, 13);
@@ -293,7 +306,7 @@
             TvAllBacks.Location = new Point(0, 16);
             TvAllBacks.Name = "TvAllBacks";
             TvAllBacks.ShowNodeToolTips = true;
-            TvAllBacks.Size = new Size(287, 109);
+            TvAllBacks.Size = new Size(287, 103);
             TvAllBacks.TabIndex = 7;
             TvAllBacks.AfterSelect += TvAllBacks_AfterSelect;
             // 
@@ -322,7 +335,7 @@
             AutoScaleDimensions = new SizeF(9F, 21F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.Fuchsia;
-            ClientSize = new Size(1047, 621);
+            ClientSize = new Size(1071, 621);
             Controls.Add(MiddlePanel);
             Controls.Add(UpperPanel);
             Controls.Add(LowerPanel);
@@ -375,5 +388,6 @@
         private Label label1;
         private Label BackImageAccessLabel;
         private Label FilenameCharCountLabel;
+        private LinkLabel MapLinkLabel;
     }
 }
