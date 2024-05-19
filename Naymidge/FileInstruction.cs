@@ -74,10 +74,10 @@ namespace Naymidge
                 return retval;
 
             string _lat = gpsLat.Replace(" ", "");
-            _lat = _lat[0].Equals("-") ? $"{_lat}S" : $"{_lat}N";
+            _lat = _lat[0].Equals('-') ? $"{_lat[1..^0]}S" : $"{_lat}N";
 
             string _long = gpsLong.Replace(" ", "");
-            _long = _long[0].Equals("-") ? $"{_long}W" : $"{_long}E";
+            _long = _long[0].Equals('-') ? $"{_long[1..^0]}W" : $"{_long}E";
 
             return $"https://www.google.com/maps/place/{_lat}+{_long}";
         }

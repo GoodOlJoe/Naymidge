@@ -51,6 +51,7 @@ namespace Naymidge
             PlayerMain = new Player(Config);
             InitializeComponent();
 
+            MapLinkLabel.LinkClicked += MapLinkLabel_LinkClicked;
             txtNameInput.KeyPress += NameInput_KeyPress;
             cmdProceed.Click += CmdProceed_Click;
 
@@ -81,9 +82,11 @@ Alt-E     Edit the name                         F11      Previous item
             FileInstruction finst = _Instructions[CurrentItem];
 
             string DateTaken = string.IsNullOrEmpty(finst.DateTaken) ? "" : $"\nTaken: {finst.DateTaken}";
-            string MapURL = string.IsNullOrEmpty(finst.MapURL) ? "" : $"  Location: {finst.MapURL}";
+            MediaDetailsLabel.Text = $"{finst.FQN}{DateTaken}";
 
-            MediaDetailsLabel.Text = $"{finst.FQN}{DateTaken}{MapURL}";
+            string MapURL = string.IsNullOrEmpty(finst.MapURL) ? "" : $"  Location: {finst.MapURL}";
+            MapLinkLabel.Tag = finst.MapURL;
+            MapLinkLabel.Visible = !string.IsNullOrEmpty(finst.MapURL);
         }
         private void CalculateMaxFileNameLength()
         {
@@ -148,6 +151,13 @@ Alt-E     Edit the name                         F11      Previous item
         private void RenameUI_KeyUp(object sender, KeyEventArgs e) { e.Handled = FormKeyUpHandled(e); }
         private void NameInput_KeyPress(object? sender, KeyPressEventArgs e) { e.Handled = InputKeyPressHandled(e); }
         private void txtNameInput_TextChanged(object sender, EventArgs e) { UpdateFilenameCharCounter(); }
+        private void MapLinkLabel_LinkClicked(object? sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (null == MapLinkLabel.Tag) return;
+            string? target = MapLinkLabel.Tag.ToString();
+            if (string.IsNullOrEmpty(target)) return;
+            Process.Start(new ProcessStartInfo(target) { UseShellExecute = true });
+        }
         private void AddRecentEntryToUi(string entry) { AddRecentEntryToHistory(entry); }
         private void SetBackDetailsLabelPosition() { DockUpperRight(BackDetailsLabel, PicboxBack); }
         private void DoCancelButtonClicked()
@@ -376,5 +386,6 @@ no action {undetermined,6:N0}
             TxtRecent.SelectionStart = TxtRecent.Text.Length;
             TxtRecent.ScrollToCaret();
         }
+
     }
 }
