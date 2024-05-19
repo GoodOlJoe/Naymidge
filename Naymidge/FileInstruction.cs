@@ -1,8 +1,5 @@
 ﻿using MetadataExtractor;
-using System.Linq;
-using static System.Net.Mime.MediaTypeNames;
 using System.Text.RegularExpressions;
-using Vortice.Win32;
 
 namespace Naymidge
 {
@@ -14,7 +11,7 @@ namespace Naymidge
     }
     internal class FileInstruction
     {
-        private string _FQN;
+        private readonly string _FQN;
         public FileInstruction(string fqn)
         {
             _FQN = fqn;

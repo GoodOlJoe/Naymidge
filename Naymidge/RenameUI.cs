@@ -1,14 +1,9 @@
 using FlyleafLib;
 using FlyleafLib.MediaPlayer;
-using MetadataExtractor;
 using System.Data;
 using System.Diagnostics;
-using System.IO;
-using System.Linq.Expressions;
 using System.Text;
 using System.Text.RegularExpressions;
-using static System.Net.Mime.MediaTypeNames;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Naymidge
 {
