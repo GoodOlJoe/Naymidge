@@ -180,6 +180,38 @@ namespace Naymidge
                     },
                 }
             },
+            {
+                "Image Orientation",
+                new FactSource
+                {
+                    Descriptor = "Image Orientation",
+                    CandidateSources = new List<FactSourceCandidate>()
+                    {
+                        new FactSourceCandidate
+                        {
+                            FactSourceCandidateType = FactSourceCandidateType.MetaData,
+                            Directory = "Exif IFD0",
+                            Name = "Orientation"
+                        },
+                    },
+                }
+            },
+            {
+                "Video Orientation",
+                new FactSource
+                {
+                    Descriptor = "Video Orientation",
+                    CandidateSources = new List<FactSourceCandidate>()
+                    {
+                        new FactSourceCandidate
+                        {
+                            FactSourceCandidateType = FactSourceCandidateType.MetaData,
+                            Directory = "QuickTime Track Header",
+                            Name = "Rotation"
+                        },
+                    },
+                }
+            },
         };
 
         public static string GetValueFor(string descriptor, FileInstruction finst)

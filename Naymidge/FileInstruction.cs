@@ -26,6 +26,9 @@ namespace Naymidge
             MapURL = FormattedMapURL(GPSLat, GPSLong);
             CameraDescription = InterestingImageFactCatalog.GetValueFor("Camera Description", this);
             GPSImageDirection = InterestingImageFactCatalog.GetValueFor("Image Direction", this);
+            RequiredRotationToNormal = FormattedRotationRequirement(
+                InterestingImageFactCatalog.GetValueFor("Image Orientation", this),
+                InterestingImageFactCatalog.GetValueFor("Video Orientation", this));
         }
         public List<MetadataExtractor.Directory>? MetadataDirectories = null;
 
@@ -37,6 +40,7 @@ namespace Naymidge
         public string MapURL = "";
         public string CameraDescription = "";
         public string GPSImageDirection = "";
+        public string RequiredRotationToNormal = "0";
 
         public string FQN => _FQN;
         public bool Completed = false;
@@ -80,6 +84,33 @@ namespace Naymidge
             _long = _long[0].Equals('-') ? $"{_long[1..^0]}W" : $"{_long}E";
 
             return $"https://www.google.com/maps/place/{_lat}+{_long}";
+        }
+        private string FormattedRotationRequirement(string imageOrientation, string videoOrientation)
+        {
+            string retval = "0";
+            string patt = @"\(Rotate (?<rot>90 CW|90 CCW|180)\)$";
+
+            Match match = Regex.Match(imageOrientation, patt);
+            if (match.Success &&
+                0 < match.Groups.Count &&
+                match.Groups.ContainsKey("rot"))
+            {
+                string rot = match.Groups["rot"].Value;
+
+                if (rot.Equals("180")) retval = "180";
+                if (rot.Equals("90 CW")) retval = "90";
+                if (rot.Equals("90 CCW")) retval = "270";
+                return retval;
+            }
+
+            // dont' really understand this yet. MOV video files have a property
+            // that seems to have the value -90 but the video needs 180° rotation.
+            // this will probably need refinement as I learn more.
+            if (!string.IsNullOrEmpty(videoOrientation))
+            {
+                if (videoOrientation.Equals("-90")) retval = "180";
+            }
+            return retval;
         }
         private string FormattedDateTaken(string dateTaken)
         {
