@@ -7,6 +7,8 @@ using System.IO;
 using System.Linq.Expressions;
 using System.Text;
 using System.Text.RegularExpressions;
+using static System.Net.Mime.MediaTypeNames;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Naymidge
 {
@@ -22,6 +24,7 @@ namespace Naymidge
         private int IncCurrent => CurrentItem >= _Instructions.Count - 1 ? 0 : ++CurrentItem;
         private const int _MaxFQNLength = 258; // windows limit
         private int _MaxFileNameLength = _MaxFQNLength; // adjusted for each file based on path
+        private bool NameDirty = false;
 
         public RenameUI(ProcessingScope scope)
         {
@@ -57,10 +60,9 @@ namespace Naymidge
             cmdProceed.Click += CmdProceed_Click;
 
             flyleafHostMain.Player = PlayerMain;
-            KeyboardShortcutsLabel.Text = @"Alt-B     Select a Back image to view           F10      Mark/Unmark for delete
-Alt-E     Edit the name                         F11      Previous item
-<number>  Reuse numbered name from the list     F12      Next item
-<space>   Reuse most recent name";
+            KeyboardShortcutsLabel.Text = @"Alt-B    Select a Back image to view        F10    Mark/ Unmark for delete        <number> Reuse numbered name from the list
+Alt-E    Edit the name                      F11    Previous item                  <space>  Reuse most recent name
+Alt-D    Enter Date Taken                   F12    Next item";
             UpdateDisplays();
             DoLayout();
         }
@@ -82,18 +84,16 @@ Alt-E     Edit the name                         F11      Previous item
         {
             FileInstruction finst = _Instructions[CurrentItem];
 
-            string DateTaken = string.IsNullOrEmpty(finst.DateTaken) ? "" : $"\nTaken: {finst.DateTaken}";
+            string DateTaken = string.IsNullOrEmpty(finst.DateTimeTaken) ? "" : $"\nTaken: {finst.DateTimeTaken}";
             MediaDetailsLabel.Text = $"{finst.FQN}{DateTaken}";
 
-            string MapURL = string.IsNullOrEmpty(finst.MapURL) ? "" : $"  Location: {finst.MapURL}";
             MapLinkLabel.Tag = finst.MapURL;
             MapLinkLabel.Visible = !string.IsNullOrEmpty(finst.MapURL);
 
-            IEnumerable<MetadataExtractor.Directory> directories = ImageMetadataReader.ReadMetadata(finst.FQN);
-            foreach (var dir in directories)
-                foreach (var tag in dir.Tags)
-                    Debug.WriteLine($"{dir.Name} - {tag.Name} = {tag.Description}");
-
+            //IEnumerable<MetadataExtractor.Directory> directories = ImageMetadataReader.ReadMetadata(finst.FQN);
+            //foreach (var dir in directories)
+            //    foreach (var tag in dir.Tags)
+            //        Debug.WriteLine($"{dir.Name} - {tag.Name} = {tag.Description}");
         }
         private void CalculateMaxFileNameLength()
         {
@@ -150,7 +150,7 @@ Alt-E     Edit the name                         F11      Previous item
             {
                 case "180": return 180;
                 case "90": return 90;
-                case "270":return 270;
+                case "270": return 270;
                 default: return 0;
             }
         }
@@ -255,6 +255,13 @@ Alt-E     Edit the name                         F11      Previous item
                 // special shortcut for reusing the most recent name is a space, saves them typing "1"
                 string newName = txtNameInput.Text.Equals(" ") ? ReuseLastNameShortcut : txtNameInput.Text.Trim();
 
+                // we populate the name field with a helper value of the date taken. But if they hit enter
+                // without changing that value, we don't want it to "count" as the new name, so we ignore
+                // that special case where there is a DateTaken metadata value and the new name equals that 
+                // metadata value exactly
+                if (!string.IsNullOrEmpty(_Instructions[CurrentItem].DateTaken) && newName.Trim().Equals(_Instructions[CurrentItem].DateTaken.Trim()))
+                    newName = "";
+
                 if (!string.IsNullOrEmpty(newName))
                 {
                     newName = newName.Equals(ReuseLastNameShortcut) ? "1" : newName;
@@ -291,11 +298,16 @@ Alt-E     Edit the name                         F11      Previous item
                     txtNameInput.Text = DeleteNotice;
                     break;
                 default:
-                    txtNameInput.Clear();
+                    //txtNameInput.Clear();
+                    // if there's no name, put a helper value of the date taken
+                    txtNameInput.Text = $"{_Instructions[itemNdx].DateTaken} ";
+                    txtNameInput.SelectionStart = txtNameInput.Text.Length;
+                    txtNameInput.SelectionLength = 0;
                     break;
             }
             UpdateProgressLabel();
             UpdateDisplays();
+            NameDirty = false;
         }
         private void DoBackImageSelectionChanged(TreeViewEventArgs e) { if (e.Node?.Tag is string FQN) DisplayBackImage(FQN); }
         private void DisplayBackImage(string FQN)

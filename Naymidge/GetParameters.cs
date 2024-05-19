@@ -146,7 +146,14 @@ namespace Naymidge
                 bool matched = false;
                 foreach (string p in _Scope.Patterns.Where(pat => !pat.StartsWith("//"))) // // is comment
                 {
-                    matched = Regex.IsMatch(fn, p, RegexOptions.IgnoreCase);
+                    try
+                    {
+                        matched = Regex.IsMatch(fn, p, RegexOptions.IgnoreCase);
+                    }
+                    catch
+                    {
+                        // ignore invalid regex pattern but continue processing other patterns
+                    }
                     if (matched) break;
                 }
                 if (matched)

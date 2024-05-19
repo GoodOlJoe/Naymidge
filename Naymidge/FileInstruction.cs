@@ -19,7 +19,8 @@ namespace Naymidge
         {
             _FQN = fqn;
             MetadataDirectories = ImageMetadataReader.ReadMetadata(fqn).ToList();
-            DateTaken = FormattedDateTaken(InterestingImageFactCatalog.GetValueFor("Date Taken", this));
+            DateTimeTaken = FormattedDateTimeTaken(InterestingImageFactCatalog.GetValueFor("Date Taken", this));
+            DateTaken = FormattedDateTaken(DateTimeTaken);
             GPSTimeZoneTaken = InterestingImageFactCatalog.GetValueFor("Time Zone Taken", this);
             GPSLat = InterestingImageFactCatalog.GetValueFor("Latitude", this);
             GPSLong = InterestingImageFactCatalog.GetValueFor("Longitude", this);
@@ -33,6 +34,7 @@ namespace Naymidge
         public List<MetadataExtractor.Directory>? MetadataDirectories = null;
 
         // image file facts harvested mostly from meta data tags
+        public string DateTimeTaken = "";
         public string DateTaken = "";
         public string GPSTimeZoneTaken = "";
         public string GPSLat = "";
@@ -112,7 +114,7 @@ namespace Naymidge
             }
             return retval;
         }
-        private string FormattedDateTaken(string dateTaken)
+        private string FormattedDateTimeTaken(string dateTaken)
         {
             string patternForMetaData = @"^(?<year>\d\d\d\d):(?<month>\d\d):(?<day>\d\d) (?<time>\d\d:\d\d:\d\d)$";
 
@@ -122,6 +124,21 @@ namespace Naymidge
             GroupCollection gc = match.Groups;
 
             return $"{gc["year"].Value} {gc["month"].Value} {gc["day"].Value} {gc["time"].Value}";
+        }
+        private string FormattedDateTaken(string dateTimeTaken)
+        {
+            if (string.IsNullOrEmpty(dateTimeTaken)) return "";
+
+            string patt = @"^(?<year>\d\d\d\d) (?<month>\d\d) ((?<day>\d\d) )?";
+
+            Match match = Regex.Match(dateTimeTaken, patt);
+            if (!match.Success) return "";
+
+            GroupCollection gc = match.Groups;
+            string y = gc.ContainsKey("year") ? gc["year"].Value : "";
+            string m = gc.ContainsKey("month") ? gc["month"].Value : "";
+            string d = gc.ContainsKey("day") ? gc["day"].Value : "";
+            return $"{y} {m} {d}".Trim();
         }
     }
 }
