@@ -80,13 +80,10 @@ Alt-E     Edit the name                         F11      Previous item
         {
             FileInstruction finst = _Instructions[CurrentItem];
 
-            finst.MetadataDirectories = ImageMetadataReader.ReadMetadata(finst.FQN).ToList();
-            //IEnumerable<MetadataExtractor.Directory> directories = ImageMetadataReader.ReadMetadata(finst.FQN);
-            //foreach (var dir in directories)
-            //    foreach (var tag in dir.Tags)
-            //        Debug.WriteLine($"{dir.Name} - {tag.Name} = {tag.Description}");
+            string DateTaken = string.IsNullOrEmpty(finst.DateTaken) ? "" : $"\nTaken: {finst.DateTaken}";
+            string MapURL = string.IsNullOrEmpty(finst.MapURL) ? "" : $"  Location: {finst.MapURL}";
 
-            MediaDetailsLabel.Text = finst.FQN;
+            MediaDetailsLabel.Text = $"{finst.FQN}{DateTaken}{MapURL}";
         }
         private void CalculateMaxFileNameLength()
         {

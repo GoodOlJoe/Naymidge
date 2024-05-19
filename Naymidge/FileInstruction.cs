@@ -1,5 +1,8 @@
 ﻿using MetadataExtractor;
 using System.Linq;
+using static System.Net.Mime.MediaTypeNames;
+using System.Text.RegularExpressions;
+using Vortice.Win32;
 
 namespace Naymidge
 {
@@ -16,10 +19,11 @@ namespace Naymidge
         {
             _FQN = fqn;
             MetadataDirectories = ImageMetadataReader.ReadMetadata(fqn).ToList();
-            DateTaken = InterestingImageFactCatalog.GetValueFor("Date Taken", this);
+            DateTaken = FormattedDateTaken(InterestingImageFactCatalog.GetValueFor("Date Taken", this));
             GPSTimeZoneTaken = InterestingImageFactCatalog.GetValueFor("Time Zone Taken", this);
             GPSLat = InterestingImageFactCatalog.GetValueFor("Latitude", this);
             GPSLong = InterestingImageFactCatalog.GetValueFor("Longitude", this);
+            MapURL = FormattedMapURL(GPSLat, GPSLong);
             CameraDescription = InterestingImageFactCatalog.GetValueFor("Camera Description", this);
             GPSImageDirection = InterestingImageFactCatalog.GetValueFor("Image Direction", this);
         }
@@ -30,6 +34,7 @@ namespace Naymidge
         public string GPSTimeZoneTaken = "";
         public string GPSLat = "";
         public string GPSLong = "";
+        public string MapURL = "";
         public string CameraDescription = "";
         public string GPSImageDirection = "";
 
@@ -61,6 +66,31 @@ namespace Naymidge
             {
                 NewFileName = ""; Verb = FileInstructionVerb.Delete;
             }
+        }
+        private string FormattedMapURL(string gpsLat, string gpsLong)
+        {
+            string retval = "";
+            if (string.IsNullOrEmpty(gpsLat) || string.IsNullOrEmpty(gpsLong))
+                return retval;
+
+            string _lat = gpsLat.Replace(" ", "");
+            _lat = _lat[0].Equals("-") ? $"{_lat}S" : $"{_lat}N";
+
+            string _long = gpsLong.Replace(" ", "");
+            _long = _long[0].Equals("-") ? $"{_long}W" : $"{_long}E";
+
+            return $"https://www.google.com/maps/place/{_lat}+{_long}";
+        }
+        private string FormattedDateTaken(string dateTaken)
+        {
+            string patternForMetaData = @"^(?<year>\d\d\d\d):(?<month>\d\d):(?<day>\d\d) (?<time>\d\d:\d\d:\d\d)$";
+
+            Match match = Regex.Match(dateTaken, patternForMetaData);
+            if (!match.Success) return dateTaken;
+
+            GroupCollection gc = match.Groups;
+
+            return $"{gc["year"].Value} {gc["month"].Value} {gc["day"].Value} {gc["time"].Value}";
         }
     }
 }
