@@ -241,7 +241,7 @@ namespace Naymidge
                             // the properties that we know are specified in some FactSourceCandidate need to be
                             // accounted for here.
                             case "CreationTime":
-                                fi.CreationTime.ToString("yyyy MM dd HH:mm");
+                                retval = fi.CreationTime.ToString("yyyy MM dd HH:mm");
                                 break;
                         }
                         break;

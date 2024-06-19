@@ -44,7 +44,7 @@
             tvNotIncluded = new TreeView();
             txtPatterns = new TextBox();
             PicSelectionStatus = new PictureBox();
-            RenameGroup = new GroupBox();
+            ProcessGroup = new GroupBox();
             CmdRename = new Button();
             cmdClose = new Button();
             TimerUIRefresh = new System.Windows.Forms.Timer(components);
@@ -52,10 +52,11 @@
             ContentDirectoryDialog = new SaveFileDialog();
             folderBrowserDialog1 = new FolderBrowserDialog();
             SelectionStatusImageList = new ImageList(components);
+            CmdRefile = new Button();
             InputGroup.SuspendLayout();
             RefineGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)PicSelectionStatus).BeginInit();
-            RenameGroup.SuspendLayout();
+            ProcessGroup.SuspendLayout();
             SuspendLayout();
             // 
             // InputGroup
@@ -68,7 +69,7 @@
             InputGroup.Controls.Add(txtContentDirectory);
             InputGroup.Location = new Point(22, 21);
             InputGroup.Name = "InputGroup";
-            InputGroup.Size = new Size(1086, 137);
+            InputGroup.Size = new Size(1091, 137);
             InputGroup.TabIndex = 0;
             InputGroup.TabStop = false;
             InputGroup.Text = "Content Directory";
@@ -77,7 +78,7 @@
             // 
             CmdPickContentDirectory.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             CmdPickContentDirectory.Font = new Font("Wingdings", 12F, FontStyle.Regular, GraphicsUnit.Point, 2);
-            CmdPickContentDirectory.Location = new Point(1021, 26);
+            CmdPickContentDirectory.Location = new Point(1026, 26);
             CmdPickContentDirectory.Margin = new Padding(4, 5, 4, 5);
             CmdPickContentDirectory.Name = "CmdPickContentDirectory";
             CmdPickContentDirectory.Size = new Size(35, 26);
@@ -96,7 +97,7 @@
             txtContentDirectoryStatus.Multiline = true;
             txtContentDirectoryStatus.Name = "txtContentDirectoryStatus";
             txtContentDirectoryStatus.ReadOnly = true;
-            txtContentDirectoryStatus.Size = new Size(788, 56);
+            txtContentDirectoryStatus.Size = new Size(793, 56);
             txtContentDirectoryStatus.TabIndex = 3;
             txtContentDirectoryStatus.Tag = "Patterns not applied yet";
             // 
@@ -126,7 +127,7 @@
             txtContentDirectory.Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
             txtContentDirectory.Location = new Point(30, 29);
             txtContentDirectory.Name = "txtContentDirectory";
-            txtContentDirectory.Size = new Size(983, 25);
+            txtContentDirectory.Size = new Size(988, 25);
             txtContentDirectory.TabIndex = 0;
             txtContentDirectory.Text = "{last used output file}";
             txtContentDirectory.TextChanged += Selection_Changed;
@@ -143,7 +144,7 @@
             RefineGroup.Controls.Add(PicSelectionStatus);
             RefineGroup.Location = new Point(22, 158);
             RefineGroup.Name = "RefineGroup";
-            RefineGroup.Size = new Size(1086, 268);
+            RefineGroup.Size = new Size(1091, 267);
             RefineGroup.TabIndex = 1;
             RefineGroup.TabStop = false;
             RefineGroup.Text = "Refine Content";
@@ -152,7 +153,7 @@
             // 
             IncludedFilesLabel.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             IncludedFilesLabel.AutoSize = true;
-            IncludedFilesLabel.Location = new Point(663, 19);
+            IncludedFilesLabel.Location = new Point(668, 19);
             IncludedFilesLabel.Margin = new Padding(4, 0, 4, 0);
             IncludedFilesLabel.Name = "IncludedFilesLabel";
             IncludedFilesLabel.Size = new Size(82, 21);
@@ -185,12 +186,12 @@
             tvIncluded.BackColor = Color.FromArgb(221, 255, 224);
             tvIncluded.Font = new Font("Consolas", 12F);
             tvIncluded.ForeColor = Color.Green;
-            tvIncluded.Location = new Point(663, 42);
+            tvIncluded.Location = new Point(665, 42);
             tvIncluded.Name = "tvIncluded";
             tvIncluded.ShowLines = false;
             tvIncluded.ShowNodeToolTips = true;
             tvIncluded.ShowRootLines = false;
-            tvIncluded.Size = new Size(399, 208);
+            tvIncluded.Size = new Size(399, 207);
             tvIncluded.TabIndex = 3;
             // 
             // tvNotIncluded
@@ -200,12 +201,12 @@
             tvNotIncluded.Font = new Font("Consolas", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             tvNotIncluded.ForeColor = Color.Maroon;
             tvNotIncluded.ItemHeight = 24;
-            tvNotIncluded.Location = new Point(295, 42);
+            tvNotIncluded.Location = new Point(297, 42);
             tvNotIncluded.Name = "tvNotIncluded";
             tvNotIncluded.ShowLines = false;
             tvNotIncluded.ShowNodeToolTips = true;
             tvNotIncluded.ShowRootLines = false;
-            tvNotIncluded.Size = new Size(360, 208);
+            tvNotIncluded.Size = new Size(360, 207);
             tvNotIncluded.TabIndex = 2;
             // 
             // txtPatterns
@@ -216,7 +217,7 @@
             txtPatterns.Multiline = true;
             txtPatterns.Name = "txtPatterns";
             txtPatterns.ScrollBars = ScrollBars.Vertical;
-            txtPatterns.Size = new Size(182, 208);
+            txtPatterns.Size = new Size(182, 207);
             txtPatterns.TabIndex = 1;
             txtPatterns.TextChanged += Selection_Changed;
             // 
@@ -229,33 +230,34 @@
             PicSelectionStatus.TabIndex = 0;
             PicSelectionStatus.TabStop = false;
             // 
-            // RenameGroup
+            // ProcessGroup
             // 
-            RenameGroup.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            RenameGroup.Controls.Add(CmdRename);
-            RenameGroup.Location = new Point(22, 432);
-            RenameGroup.Name = "RenameGroup";
-            RenameGroup.Size = new Size(1086, 74);
-            RenameGroup.TabIndex = 2;
-            RenameGroup.TabStop = false;
-            RenameGroup.Text = "Rename";
+            ProcessGroup.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            ProcessGroup.Controls.Add(CmdRefile);
+            ProcessGroup.Controls.Add(CmdRename);
+            ProcessGroup.Location = new Point(22, 431);
+            ProcessGroup.Name = "ProcessGroup";
+            ProcessGroup.Size = new Size(1091, 74);
+            ProcessGroup.TabIndex = 2;
+            ProcessGroup.TabStop = false;
+            ProcessGroup.Text = "Processing";
             // 
             // CmdRename
             // 
-            CmdRename.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            CmdRename.Location = new Point(827, 22);
+            CmdRename.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            CmdRename.Location = new Point(521, 22);
             CmdRename.Name = "CmdRename";
-            CmdRename.Size = new Size(235, 41);
+            CmdRename.Size = new Size(284, 41);
             CmdRename.TabIndex = 0;
-            CmdRename.Text = "View and &Rename Content";
+            CmdRename.Text = "1. View and &Rename Included Content";
             CmdRename.UseVisualStyleBackColor = true;
             CmdRename.Click += CmdRename_Click;
             // 
-            // cmdCancel
+            // cmdClose
             // 
             cmdClose.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            cmdClose.Location = new Point(925, 525);
-            cmdClose.Name = "cmdCancel";
+            cmdClose.Location = new Point(930, 524);
+            cmdClose.Name = "cmdClose";
             cmdClose.Size = new Size(184, 38);
             cmdClose.TabIndex = 3;
             cmdClose.Text = "&Close";
@@ -278,13 +280,24 @@
             SelectionStatusImageList.TransparentColor = Color.Transparent;
             SelectionStatusImageList.Images.SetKeyName(0, "LED_black_red_green_medium.h.72.png");
             // 
+            // CmdRefile
+            // 
+            CmdRefile.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            CmdRefile.Location = new Point(811, 22);
+            CmdRefile.Name = "CmdRefile";
+            CmdRefile.Size = new Size(256, 41);
+            CmdRefile.TabIndex = 1;
+            CmdRefile.Text = "2. Smart Re&file Included Content";
+            CmdRefile.UseVisualStyleBackColor = true;
+            CmdRefile.Click += CmdRefile_Click;
+            // 
             // GetParameters
             // 
             AutoScaleDimensions = new SizeF(9F, 21F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1132, 582);
+            ClientSize = new Size(1137, 581);
             Controls.Add(cmdClose);
-            Controls.Add(RenameGroup);
+            Controls.Add(ProcessGroup);
             Controls.Add(RefineGroup);
             Controls.Add(InputGroup);
             Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
@@ -300,7 +313,7 @@
             RefineGroup.ResumeLayout(false);
             RefineGroup.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)PicSelectionStatus).EndInit();
-            RenameGroup.ResumeLayout(false);
+            ProcessGroup.ResumeLayout(false);
             ResumeLayout(false);
         }
 
@@ -308,7 +321,7 @@
 
         private GroupBox InputGroup;
         private GroupBox RefineGroup;
-        private GroupBox RenameGroup;
+        private GroupBox ProcessGroup;
         private Button cmdClose;
         private Button CmdRename;
         private PictureBox PicSelectionStatus;
@@ -328,5 +341,6 @@
         private SaveFileDialog ContentDirectoryDialog;
         private FolderBrowserDialog folderBrowserDialog1;
         private ImageList SelectionStatusImageList;
+        private Button CmdRefile;
     }
 }

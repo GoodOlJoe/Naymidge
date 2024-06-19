@@ -49,6 +49,7 @@ namespace Naymidge
         }
         private void CmdClose_Click(object sender, EventArgs e) { Application.Exit(); }
         private void CmdRename_Click(object sender, EventArgs e) { DoRenameForm(); }
+        private void CmdRefile_Click(object sender, EventArgs e) { DoSmartRefiling(); }
         private void TimerSelectionRefresh_Tick(object sender, EventArgs e) { DoRefreshSelection(); }
         private void Selection_Changed(object sender, EventArgs e) { ResetSelectionRefreshTimer(); }
         private void TimerUIRefresh_Tick(object sender, EventArgs e) { UpdateUIEnablement(); }
@@ -63,10 +64,10 @@ namespace Naymidge
             frm.ShowDialog();
             DoRefreshSelection();
         }
-        private void DoSmartFiling()
+        private void DoSmartRefiling()
         {
             if (!TrySelection()) return;
-            SmartFileUI frm = new(_Scope);
+            SmartRefileUI frm = new(_Scope);
             frm.ShowDialog();
             DoRefreshSelection();
         }

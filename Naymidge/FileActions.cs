@@ -1,4 +1,6 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Net.Http.Headers;
+using System.Text.RegularExpressions;
+using System.Windows.Forms.VisualStyles;
 
 namespace Naymidge
 {
@@ -27,6 +29,44 @@ namespace Naymidge
             string newFQN = SerialFQN(TargetFQN(instruction));
             File.Move(instruction.FQN, newFQN);
             return newFQN;
+        }
+        internal static string DoSmartRefile(FileInstruction instruction, string target, bool fileByDate, bool useDateTakenIfFilenameUndated)
+        {
+            string finalTarget = FinalRefileTarget(instruction, target, fileByDate, useDateTakenIfFilenameUndated);
+            return finalTarget; // temp...actually need to do the move here which will be via DoRename (I think)
+        }
+        private static string FinalRefileTarget(FileInstruction instruction, string target, bool fileByDate, bool useDateTakenIfFilenameUndated)
+        {
+            if (!fileByDate) return target;
+
+            string retval = target;
+            string patt = @"^((?<year>\d\d\d\d) ((?<month>\d\d) )?)?(?<everything_else>.+)$";
+
+            Match match = Regex.Match(instruction.FileName, patt);
+            if (match.Success && 0 < match.Groups.Count)
+            {
+                // the file name starts with 'yyyy' or 'yyyy mm'
+                if (match.Groups.ContainsKey("year") && !string.IsNullOrEmpty(match.Groups["year"].Value))
+                {
+                    retval = Path.Combine(retval, match.Groups["year"].Value);
+
+                    if (match.Groups.ContainsKey("month") && !string.IsNullOrEmpty(match.Groups["month"].Value))
+                        retval = Path.Combine(retval, match.Groups["month"].Value);
+                }
+                else if (useDateTakenIfFilenameUndated && !string.IsNullOrEmpty(instruction.DateTaken) && instruction.DateTaken.Length > 7)
+                {
+                    // the file name does not start with a date, use the 'date taken' property,
+                    // which may be from image meta data or may be the file creation date if no meta data
+                    retval = Path.Combine(retval, instruction.DateTaken[0..4]); // year
+                    retval = Path.Combine(retval, instruction.DateTaken[5..7]); // month
+                }
+                else
+                {
+                    // the file name does not start with a date, use 'undated'
+                    retval = Path.Combine(target, "undated");
+                }
+            }
+            return retval;
         }
         private static string TargetFQN(FileInstruction instruction)
         {
