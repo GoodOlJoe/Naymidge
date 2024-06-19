@@ -63,6 +63,13 @@ namespace Naymidge
             frm.ShowDialog();
             DoRefreshSelection();
         }
+        private void DoSmartFiling()
+        {
+            if (!TrySelection()) return;
+            SmartFileUI frm = new(_Scope);
+            frm.ShowDialog();
+            DoRefreshSelection();
+        }
         private void DoPickContentDirectory()
         {
             ContentDirectoryDialog.InitialDirectory = txtContentDirectory.Text.Trim();

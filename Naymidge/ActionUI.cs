@@ -21,6 +21,39 @@ namespace Naymidge
         }
         private void DoCloseButtonClicked() { Close(); }
         private void DoCancelButtonClicked() { _UserCancel = true; }
+        /// <summary>
+        /// Move each file in the given file instructions to the target, renaming the file with a sequence number
+        /// first if needed to avoid filename collisions if necessary.
+        /// </summary>
+        /// <param name="instructions">List of FileInstruction objects to act on</param>
+        /// <param name="target">The fully qualified target directory to move each file to (if fileByDate is false) or the root directory under which a date/month filing structure will be used to move the files to (if fileByDate is true)</param>
+        /// <param name="fileByDate">False to move the files directory to the target directory. True to add a date/month filing structure under the target directory</param>
+        internal void DoSmartFiling(List<FileInstruction> instructions, string target, bool fileByDate)
+        {
+            target = @"E:\All\Photos\MomDad"; // todo: use the path passed in
+            fileByDate = true; // todo: use the switch passed in
+
+            string spacing = TextStatus.Text.Length > 0 ? "\r\n\r\n" : "";
+            TextStatus.Text += $"{spacing}DELETING\r\n";
+            foreach (FileInstruction fi in instructions)
+            {
+                ProgressBar.Value++;
+                try
+                {
+                    FileActions.DoSmartFile(fi);
+                    TextStatus.Text += $"  {fi.FileName}\r\n";
+                    delete.Completed = true;
+                }
+                catch (Exception ex)
+                {
+                    LogError($"  *** ERROR {delete.FileName}\r\n{ex.Message}");
+                }
+                TextStatus.SelectionStart = TextStatus.Text.Length;
+                TextStatus.ScrollToCaret();
+                ProgressBar.Value = 0;
+            }
+
+        }
         internal void ProcessFileInstructions(List<FileInstruction> instructions)
         {
             int delete = instructions.Where(inst => inst.Verb == FileInstructionVerb.Delete && !inst.Completed).Count();

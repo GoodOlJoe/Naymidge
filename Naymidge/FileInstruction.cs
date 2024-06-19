@@ -15,18 +15,22 @@ namespace Naymidge
         public FileInstruction(string fqn)
         {
             _FQN = fqn;
-            MetadataDirectories = ImageMetadataReader.ReadMetadata(fqn).ToList();
-            DateTimeTaken = FormattedDateTimeTaken(InterestingImageFactCatalog.GetValueFor("Date Taken", this));
-            DateTaken = FormattedDateTaken(DateTimeTaken);
-            GPSTimeZoneTaken = InterestingImageFactCatalog.GetValueFor("Time Zone Taken", this);
-            GPSLat = InterestingImageFactCatalog.GetValueFor("Latitude", this);
-            GPSLong = InterestingImageFactCatalog.GetValueFor("Longitude", this);
-            MapURL = FormattedMapURL(GPSLat, GPSLong);
-            CameraDescription = InterestingImageFactCatalog.GetValueFor("Camera Description", this);
-            GPSImageDirection = InterestingImageFactCatalog.GetValueFor("Image Direction", this);
-            RequiredRotationToNormal = FormattedRotationRequirement(
-                InterestingImageFactCatalog.GetValueFor("Image Orientation", this),
-                InterestingImageFactCatalog.GetValueFor("Video Orientation", this));
+            try
+            {
+                MetadataDirectories = ImageMetadataReader.ReadMetadata(fqn).ToList();
+                DateTimeTaken = FormattedDateTimeTaken(InterestingImageFactCatalog.GetValueFor("Date Taken", this));
+                DateTaken = FormattedDateTaken(DateTimeTaken);
+                GPSTimeZoneTaken = InterestingImageFactCatalog.GetValueFor("Time Zone Taken", this);
+                GPSLat = InterestingImageFactCatalog.GetValueFor("Latitude", this);
+                GPSLong = InterestingImageFactCatalog.GetValueFor("Longitude", this);
+                MapURL = FormattedMapURL(GPSLat, GPSLong);
+                CameraDescription = InterestingImageFactCatalog.GetValueFor("Camera Description", this);
+                GPSImageDirection = InterestingImageFactCatalog.GetValueFor("Image Direction", this);
+                RequiredRotationToNormal = FormattedRotationRequirement(
+                    InterestingImageFactCatalog.GetValueFor("Image Orientation", this),
+                    InterestingImageFactCatalog.GetValueFor("Video Orientation", this));
+            }
+            catch { }
         }
         public List<MetadataExtractor.Directory>? MetadataDirectories = null;
 
