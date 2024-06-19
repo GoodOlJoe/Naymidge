@@ -188,7 +188,10 @@ Alt-D    Enter Date Taken                   F12    Next item";
                 msg = $"You have {rename:N0} {renameNoun} and {delete:N0} {deleteNoun} pending, do you want to cancel and lose {pronoun}?";
 
             if (string.IsNullOrEmpty(msg) || MessageBox.Show(msg, $"Cancel pending {changeNoun}?", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            {
+                PlayerMain.Stop(); // release lock on the currently displayed media file
                 Close();
+            }
         }
         private void DoProceedButtonClicked()
         {
