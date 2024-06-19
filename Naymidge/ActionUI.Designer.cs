@@ -100,7 +100,7 @@
             TextErrors.ScrollBars = ScrollBars.Vertical;
             TextErrors.Size = new Size(913, 160);
             TextErrors.TabIndex = 5;
-            TextErrors.Text = "asdf";
+            TextErrors.Text = "";
             // 
             // TextStatus
             // 

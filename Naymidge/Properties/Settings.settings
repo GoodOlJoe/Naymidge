@@ -12,5 +12,14 @@ mov$</Value>
     <Setting Name="MruIncludeSubdirectories" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
+    <Setting Name="MruRefileTarget" Type="System.String" Scope="User">
+      <Value Profile="(Default)">{MRU refile target}</Value>
+    </Setting>
+    <Setting Name="MruFileByDate" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="MruUseDateTaken" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

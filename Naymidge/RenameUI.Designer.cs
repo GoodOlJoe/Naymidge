@@ -196,7 +196,7 @@
             txtNameInput.Name = "txtNameInput";
             txtNameInput.Size = new Size(715, 46);
             txtNameInput.TabIndex = 6;
-            txtNameInput.TextChanged += txtNameInput_TextChanged;
+            txtNameInput.TextChanged += TxtNameInput_TextChanged;
             // 
             // MiddlePanel
             // 

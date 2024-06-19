@@ -18,7 +18,7 @@ namespace Naymidge
         private class FactSource
         {
             public string Descriptor = "";
-            public List<FactSourceCandidate> CandidateSources = new();
+            public List<FactSourceCandidate> CandidateSources = [];
         }
         /*
          * The Catalog is a list of facts we're interested in gathering for this image, plus one
@@ -35,8 +35,8 @@ namespace Naymidge
                 new FactSource
                 {
                     Descriptor = "Date Taken",
-                    CandidateSources = new List<FactSourceCandidate>()
-                    {
+                    CandidateSources =
+                    [
                         new() {
                             FactSourceCandidateType = FactSourceCandidateType.MetaData,
                             Directory = "Exif IFD0",
@@ -57,7 +57,7 @@ namespace Naymidge
                             Directory = "FileInfo",
                             Name = "CreationTime"
                         },
-                    },
+                    ],
                 }
             },
             {
@@ -65,8 +65,8 @@ namespace Naymidge
                 new FactSource
                 {
                     Descriptor = "Time Zone Taken",
-                    CandidateSources = new List<FactSourceCandidate>()
-                    {
+                    CandidateSources =
+                    [
                         new() {
                             FactSourceCandidateType = FactSourceCandidateType.MetaData,
                             Directory = "Exif SubIFD",
@@ -77,7 +77,7 @@ namespace Naymidge
                             Directory = "Exif SubIFD",
                             Name = "Time Zone Original"
                         },
-                    },
+                    ],
                 }
             },
             {
@@ -85,8 +85,8 @@ namespace Naymidge
                 new FactSource
                 {
                     Descriptor = "Camera Description",
-                    CandidateSources = new List<FactSourceCandidate>()
-                    {
+                    CandidateSources =
+                    [
                         new() {
                             FactSourceCandidateType = FactSourceCandidateType.MetaData,
                             Directory = "Exif IFD0",
@@ -97,7 +97,7 @@ namespace Naymidge
                             Directory = "Exif IFD0",
                             Name = "Host Computer"
                         },
-                    },
+                    ],
                 }
             },
             {
@@ -105,14 +105,14 @@ namespace Naymidge
                 new FactSource
                 {
                     Descriptor = "Latitude",
-                    CandidateSources = new List<FactSourceCandidate>()
-                    {
+                    CandidateSources =
+                    [
                         new() {
                             FactSourceCandidateType = FactSourceCandidateType.MetaData,
                             Directory = "GPS",
                             Name = "GPS Latitude"
                         },
-                    },
+                    ],
                 }
             },
             {
@@ -120,14 +120,14 @@ namespace Naymidge
                 new FactSource
                 {
                     Descriptor = "Longitude",
-                    CandidateSources = new List<FactSourceCandidate>()
-                    {
+                    CandidateSources =
+                    [
                         new() {
                             FactSourceCandidateType = FactSourceCandidateType.MetaData,
                             Directory = "GPS",
                             Name = "GPS Longitude"
                         },
-                    },
+                    ],
                 }
             },
             {
@@ -135,14 +135,14 @@ namespace Naymidge
                 new FactSource
                 {
                     Descriptor = "Image Direction",
-                    CandidateSources = new List<FactSourceCandidate>()
-                    {
+                    CandidateSources =
+                    [
                         new() {
                             FactSourceCandidateType = FactSourceCandidateType.MetaData,
                             Directory = "GPS",
                             Name = "GPS Img Direction"
                         },
-                    },
+                    ],
                 }
             },
             {
@@ -150,14 +150,14 @@ namespace Naymidge
                 new FactSource
                 {
                     Descriptor = "Unique ID",
-                    CandidateSources = new List<FactSourceCandidate>()
-                    {
+                    CandidateSources =
+                    [
                         new() {
                             FactSourceCandidateType = FactSourceCandidateType.MetaData,
                             Directory = "Apple Makernote",
                             Name = "Photo Identifier"
                         },
-                    },
+                    ],
                 }
             },
             {
@@ -165,14 +165,14 @@ namespace Naymidge
                 new FactSource
                 {
                     Descriptor = "Image Orientation",
-                    CandidateSources = new List<FactSourceCandidate>()
-                    {
+                    CandidateSources =
+                    [
                         new() {
                             FactSourceCandidateType = FactSourceCandidateType.MetaData,
                             Directory = "Exif IFD0",
                             Name = "Orientation"
                         },
-                    },
+                    ],
                 }
             },
             {
@@ -180,14 +180,14 @@ namespace Naymidge
                 new FactSource
                 {
                     Descriptor = "Video Orientation",
-                    CandidateSources = new List<FactSourceCandidate>()
-                    {
+                    CandidateSources =
+                    [
                         new() {
                             FactSourceCandidateType = FactSourceCandidateType.MetaData,
                             Directory = "QuickTime Track Header",
                             Name = "Rotation"
                         },
-                    },
+                    ],
                 }
             },
         };
@@ -200,15 +200,15 @@ namespace Naymidge
                 finst == null ||
                 finst.MetadataDirectories == null ||
                 string.IsNullOrEmpty(descriptor) ||
-                !Catalog.ContainsKey(descriptor) ||
-                null == Catalog[descriptor].CandidateSources ||
-                0 == Catalog[descriptor].CandidateSources.Count
+                !Catalog.TryGetValue(descriptor, out FactSource? value) ||
+                null == value.CandidateSources ||
+                0 == value.CandidateSources.Count
             )
             {
                 return retval;
             }
 
-            List<FactSourceCandidate> candidateSources = Catalog[descriptor].CandidateSources;
+            List<FactSourceCandidate> candidateSources = value.CandidateSources;
 
             // go through the Catalog's list of order sources for this descriptor, try to find a match
             foreach (FactSourceCandidate candidateSource in candidateSources)
@@ -241,7 +241,7 @@ namespace Naymidge
                             // the properties that we know are specified in some FactSourceCandidate need to be
                             // accounted for here.
                             case "CreationTime":
-                                fi.CreationTime.ToString("yyyy MM dd HH:mm");
+                                retval = fi.CreationTime.ToString("yyyy MM dd HH:mm");
                                 break;
                         }
                         break;

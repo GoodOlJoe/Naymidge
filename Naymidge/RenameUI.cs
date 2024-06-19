@@ -19,7 +19,6 @@ namespace Naymidge
         private int IncCurrent => CurrentItem >= _Instructions.Count - 1 ? 0 : ++CurrentItem;
         private const int _MaxFQNLength = 258; // windows limit
         private int _MaxFileNameLength = _MaxFQNLength; // adjusted for each file based on path
-        private bool NameDirty = false;
 
         public RenameUI(ProcessingScope scope)
         {
@@ -112,7 +111,6 @@ Alt-D    Enter Date Taken                   F12    Next item";
 
             // populate list with 'possible' backs for the given front image
             string backWildcard = $"{match.Groups["prefix"].Value}2*{ext}";
-            Regex rgxMatchingBacks = new($"^([A-Za-z]+)1(.+)({ext})$");
             List<string> matchingBacks =
                 [.. System.IO.Directory.EnumerateFiles(dname, backWildcard, SearchOption.TopDirectoryOnly)];
 
@@ -139,15 +137,15 @@ Alt-D    Enter Date Taken                   F12    Next item";
             player.Rotation = RotationNeeded(_Instructions[index].RequiredRotationToNormal);
             player.OpenAsync(_Instructions[index].FQN);
         }
-        private uint RotationNeeded(string rot)
+        private static uint RotationNeeded(string rot)
         {
-            switch (rot)
+            return rot switch
             {
-                case "180": return 180;
-                case "90": return 90;
-                case "270": return 270;
-                default: return 0;
-            }
+                "180" => 180,
+                "90" => 90,
+                "270" => 270,
+                _ => 0,
+            };
         }
         private void BackDetailsLabel_TextChanged(object sender, EventArgs e) { SetBackDetailsLabelPosition(); }
         private void CmdCancel_Click(object sender, EventArgs e) { DoCancelButtonClicked(); }
@@ -163,7 +161,7 @@ Alt-D    Enter Date Taken                   F12    Next item";
         private void TvAllBacks_AfterSelect(object sender, TreeViewEventArgs e) { DoBackImageSelectionChanged(e); }
         private void RenameUI_KeyUp(object sender, KeyEventArgs e) { e.Handled = FormKeyUpHandled(e); }
         private void NameInput_KeyPress(object? sender, KeyPressEventArgs e) { e.Handled = InputKeyPressHandled(e); }
-        private void txtNameInput_TextChanged(object sender, EventArgs e) { UpdateFilenameCharCounter(); }
+        private void TxtNameInput_TextChanged(object sender, EventArgs e) { UpdateFilenameCharCounter(); }
         private void MapLinkLabel_LinkClicked(object? sender, LinkLabelLinkClickedEventArgs e)
         {
             if (null == MapLinkLabel.Tag) return;
@@ -302,7 +300,6 @@ Alt-D    Enter Date Taken                   F12    Next item";
             }
             UpdateProgressLabel();
             UpdateDisplays();
-            NameDirty = false;
         }
         private void DoBackImageSelectionChanged(TreeViewEventArgs e) { if (e.Node?.Tag is string FQN) DisplayBackImage(FQN); }
         private void DisplayBackImage(string FQN)
@@ -361,21 +358,10 @@ no action {undetermined,6:N0}
             FilenameCharCountLabel.Text = remaining.ToString();
             txtNameInput.BackColor = remaining < 0 ? Color.MediumVioletRed : Color.White;
         }
-        private string? GetNumberedRecentEntry(string entryNumber)
-        {
-            char[] delims = ['\r', '\n'];
-            string[] lines = TxtRecent.Text.Split(delims, StringSplitOptions.RemoveEmptyEntries);
-            string? match = lines.Where(s => s.Trim().StartsWith($"{entryNumber} ")).FirstOrDefault();
-            if (match == null)
-                return null;
-            else
-                return match.Trim()[(match.IndexOf(' ') + 1)..];
-        }
         private string GetNumberedEntryFromHistory(int index)
         {
             char[] delims = ['\r', '\n'];
             string[] lines = TxtRecent.Text.Split(delims, StringSplitOptions.RemoveEmptyEntries);
-            List<string> unnumberedEntries = new(lines.Length + 1);
             foreach (string l in lines)
             {
                 string line = l.Trim();

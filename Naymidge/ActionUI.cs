@@ -85,8 +85,8 @@ namespace Naymidge
                 }
                 TextStatus.SelectionStart = TextStatus.Text.Length;
                 TextStatus.ScrollToCaret();
-                ProgressBar.Value = 0;
             }
+            ProgressBar.Value = 0;
         }
         private void LogError(string msg)
         {
@@ -116,8 +116,52 @@ namespace Naymidge
                 }
                 TextStatus.SelectionStart = TextStatus.Text.Length;
                 TextStatus.ScrollToCaret();
-                ProgressBar.Value = 0;
             }
+            ProgressBar.Value = 0;
+        }
+        /// <summary>
+        /// Move each file in the given file instructions to the target, renaming the file with a sequence number
+        /// first if needed to avoid filename collisions if necessary.
+        /// </summary>
+        /// <param name="instructions">List of FileInstruction objects to act on</param>
+        /// <param name="target">The fully qualified target directory to move each file to (if fileByDate is false) or the root directory under which a date/month filing structure will be used to move the files to (if fileByDate is true)</param>
+        /// <param name="fileByDate">False to move the files directory to the target directory. True to add a date/month filing structure under the target directory</param>
+        /// <param name="useDateTakenIfFilenameUndated">If fileByDate is true but the filename does not start with a date, setting this to True will use the date taken attribute of the file, which might be from photo meta data or might be the file creation date if no meta data. Setting this to False will use a subdirectory 'undated' under the target</param>
+        internal void DoSmartRefiling(List<FileInstruction> instructions, string target, bool fileByDate, bool useDateTakenIfFilenameUndated)
+        {
+            if (0 == instructions.Count)
+            {
+                MessageBox.Show("There are no files to  process.", "Nothing to do", MessageBoxButtons.OK);
+                return;
+            }
+            if (string.IsNullOrEmpty(target))
+            {
+                MessageBox.Show("No target directory was specified.", "Nothing to do", MessageBoxButtons.OK);
+                return;
+            }
+
+            ProgressBar.Value = 0;
+            ProgressBar.Maximum = instructions.Count;
+            if (!Visible) Show();
+
+            string spacing = TextStatus.Text.Length > 0 ? "\r\n\r\n" : "";
+            TextStatus.Text += $"{spacing}MOVING\r\n";
+            foreach (FileInstruction fi in instructions)
+            {
+                ProgressBar.Value++;
+                try
+                {
+                    string newName = FileActions.DoSmartRefile(fi, target, fileByDate, useDateTakenIfFilenameUndated);
+                    TextStatus.Text += $"  {fi.FileName} =>\r\n        {newName}\r\n";
+                }
+                catch (Exception ex)
+                {
+                    LogError($"  *** ERROR {fi.FileName}\r\nrenaming to {fi.NewFileName} (possibly with added serial number)\r\n{ex.Message}");
+                }
+                TextStatus.SelectionStart = TextStatus.Text.Length;
+                TextStatus.ScrollToCaret();
+            }
+            ProgressBar.Value = 0;
         }
 
         private void ActionUI_Resize(object sender, EventArgs e) { DoLayout(); }
