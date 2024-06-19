@@ -39,6 +39,7 @@
             CmdPickContentDirectory = new Button();
             TimerUIRefresh = new System.Windows.Forms.Timer(components);
             UseDateTakenCheckBox = new CheckBox();
+            TargetDirectoryDialog = new SaveFileDialog();
             SuspendLayout();
             // 
             // FileByDateCheckBox
@@ -123,6 +124,7 @@
             CmdPickContentDirectory.TabIndex = 1;
             CmdPickContentDirectory.Text = "1";
             CmdPickContentDirectory.UseVisualStyleBackColor = true;
+            CmdPickContentDirectory.Click += CmdPickContentDirectory_Click;
             // 
             // UseDateTakenCheckBox
             // 
@@ -153,6 +155,7 @@
             Margin = new Padding(4);
             Name = "SmartRefileUI";
             Text = "Smart Re-filing";
+            Load += SmartRefileUI_Load;
             ResumeLayout(false);
             PerformLayout();
         }
@@ -169,5 +172,6 @@
         private Button CmdPickContentDirectory;
         private System.Windows.Forms.Timer TimerUIRefresh;
         private CheckBox UseDateTakenCheckBox;
+        private SaveFileDialog TargetDirectoryDialog;
     }
 }

@@ -33,7 +33,28 @@ namespace Naymidge
         internal static string DoSmartRefile(FileInstruction instruction, string target, bool fileByDate, bool useDateTakenIfFilenameUndated)
         {
             string finalTarget = FinalRefileTarget(instruction, target, fileByDate, useDateTakenIfFilenameUndated);
-            return finalTarget; // temp...actually need to do the move here which will be via DoRename (I think)
+            string newFQN = SerialFQN(TargetFQNForRefile(instruction, finalTarget));
+            instruction.Rename(newFQN);
+            EnsureDirectoryExists(newFQN);
+            File.Move(instruction.FQN, newFQN);
+            return newFQN;
+        }
+        private static void EnsureDirectoryExists(string FQN)
+        {
+            if (string.IsNullOrEmpty(FQN)) return;
+
+            string? target = Path.GetDirectoryName(FQN);
+            if (!string.IsNullOrEmpty(target) && !Path.Exists(target)) 
+            {
+                try
+                {
+                    Directory.CreateDirectory(target);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"The system was unable to create {target}\r\n\r\n{ex.Message}");
+                }
+            }
         }
         private static string FinalRefileTarget(FileInstruction instruction, string target, bool fileByDate, bool useDateTakenIfFilenameUndated)
         {
@@ -77,6 +98,15 @@ namespace Naymidge
             ext = string.IsNullOrEmpty(ext) ? "" : ext;
 
             return Path.Combine(dir, $"{instruction.NewFileName}{ext}");
+        }
+        private static string TargetFQNForRefile(FileInstruction instruction, string newTargetDir)
+        {
+            string dir = newTargetDir;
+            string basename = Path.GetFileNameWithoutExtension(instruction.FQN);
+            string? ext = Path.GetExtension(instruction.FQN);
+            ext = string.IsNullOrEmpty(ext) ? "" : ext;
+
+            return Path.Combine(dir, $"{basename}{ext}");
         }
         private static string SerialFQN(string FQN)
         {
