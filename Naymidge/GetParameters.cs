@@ -231,7 +231,6 @@ namespace Naymidge
         private SelectionStatus selectionStatus_;
         private SelectionStatus CurrentSelectionStatus
         {
-            get => selectionStatus_;
             set
             {
                 if (selectionStatus_ != value)

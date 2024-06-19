@@ -17,7 +17,7 @@ namespace Naymidge
             _FQN = fqn;
             try
             {
-                MetadataDirectories = ImageMetadataReader.ReadMetadata(fqn).ToList();
+                MetadataDirectories = [.. ImageMetadataReader.ReadMetadata(fqn)];
                 DateTimeTaken = FormattedDateTimeTaken(InterestingImageFactCatalog.GetValueFor("Date Taken", this));
                 DateTaken = FormattedDateTaken(DateTimeTaken);
                 GPSTimeZoneTaken = InterestingImageFactCatalog.GetValueFor("Time Zone Taken", this);
@@ -74,7 +74,7 @@ namespace Naymidge
                 NewFileName = ""; Verb = FileInstructionVerb.Delete;
             }
         }
-        private string FormattedMapURL(string gpsLat, string gpsLong)
+        private static string FormattedMapURL(string gpsLat, string gpsLong)
         {
             string retval = "";
             if (string.IsNullOrEmpty(gpsLat) || string.IsNullOrEmpty(gpsLong))
@@ -88,7 +88,7 @@ namespace Naymidge
 
             return $"https://www.google.com/maps/place/{_lat}+{_long}";
         }
-        private string FormattedRotationRequirement(string imageOrientation, string videoOrientation)
+        private static string FormattedRotationRequirement(string imageOrientation, string videoOrientation)
         {
             string retval = "0";
             string patt = @"\(Rotate (?<rot>90 CW|90 CCW|180)\)$";
@@ -115,7 +115,7 @@ namespace Naymidge
             }
             return retval;
         }
-        private string FormattedDateTimeTaken(string dateTaken)
+        private static string FormattedDateTimeTaken(string dateTaken)
         {
             string patternForMetaData = @"^(?<year>\d\d\d\d):(?<month>\d\d):(?<day>\d\d) (?<time>\d\d:\d\d:\d\d)$";
 
@@ -126,7 +126,7 @@ namespace Naymidge
 
             return $"{gc["year"].Value} {gc["month"].Value} {gc["day"].Value} {gc["time"].Value}";
         }
-        private string FormattedDateTaken(string dateTimeTaken)
+        private static string FormattedDateTaken(string dateTimeTaken)
         {
             if (string.IsNullOrEmpty(dateTimeTaken)) return "";
 

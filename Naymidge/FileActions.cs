@@ -1,6 +1,4 @@
-﻿using System.Net.Http.Headers;
-using System.Text.RegularExpressions;
-using System.Windows.Forms.VisualStyles;
+﻿using System.Text.RegularExpressions;
 
 namespace Naymidge
 {
@@ -44,7 +42,7 @@ namespace Naymidge
             if (string.IsNullOrEmpty(FQN)) return;
 
             string? target = Path.GetDirectoryName(FQN);
-            if (!string.IsNullOrEmpty(target) && !Path.Exists(target)) 
+            if (!string.IsNullOrEmpty(target) && !Path.Exists(target))
             {
                 try
                 {

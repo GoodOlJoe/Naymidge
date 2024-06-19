@@ -1,15 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Automation;
-using System.Windows.Forms;
-
-namespace Naymidge
+﻿namespace Naymidge
 {
     public partial class SmartRefileUI : Form
     {
@@ -93,7 +82,7 @@ namespace Naymidge
             }
         }
         private void DoTimerUIRefresh_Tick(object? sender, EventArgs e) { UpdateUIEnablement(); }
-        private bool TargetValid(string target)
+        private static bool TargetValid(string target)
         {
             if (Path.Exists(target)) return true;
             if (DialogResult.Yes == MessageBox.Show($"{target} does not exist. Create it?", "Create Directory?", buttons: MessageBoxButtons.YesNo))
