@@ -45,6 +45,7 @@
             txtPatterns = new TextBox();
             PicSelectionStatus = new PictureBox();
             ProcessGroup = new GroupBox();
+            CmdRefile = new Button();
             CmdRename = new Button();
             cmdClose = new Button();
             TimerUIRefresh = new System.Windows.Forms.Timer(components);
@@ -52,11 +53,13 @@
             ContentDirectoryDialog = new SaveFileDialog();
             folderBrowserDialog1 = new FolderBrowserDialog();
             SelectionStatusImageList = new ImageList(components);
-            CmdRefile = new Button();
+            ContextMenuForTreeView = new ContextMenuStrip(components);
+            CopyTextMenuItem = new ToolStripMenuItem();
             InputGroup.SuspendLayout();
             RefineGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)PicSelectionStatus).BeginInit();
             ProcessGroup.SuspendLayout();
+            ContextMenuForTreeView.SuspendLayout();
             SuspendLayout();
             // 
             // InputGroup
@@ -193,6 +196,7 @@
             tvIncluded.ShowRootLines = false;
             tvIncluded.Size = new Size(399, 207);
             tvIncluded.TabIndex = 3;
+            tvIncluded.MouseClick += TvIncluded_MouseClick;
             // 
             // tvNotIncluded
             // 
@@ -208,6 +212,7 @@
             tvNotIncluded.ShowRootLines = false;
             tvNotIncluded.Size = new Size(360, 207);
             tvNotIncluded.TabIndex = 2;
+            tvNotIncluded.MouseClick += TvNotIncluded_MouseClick;
             // 
             // txtPatterns
             // 
@@ -241,6 +246,17 @@
             ProcessGroup.TabIndex = 2;
             ProcessGroup.TabStop = false;
             ProcessGroup.Text = "Processing";
+            // 
+            // CmdRefile
+            // 
+            CmdRefile.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            CmdRefile.Location = new Point(811, 22);
+            CmdRefile.Name = "CmdRefile";
+            CmdRefile.Size = new Size(256, 41);
+            CmdRefile.TabIndex = 1;
+            CmdRefile.Text = "2. Smart Re&file Included Content";
+            CmdRefile.UseVisualStyleBackColor = true;
+            CmdRefile.Click += CmdRefile_Click;
             // 
             // CmdRename
             // 
@@ -280,16 +296,18 @@
             SelectionStatusImageList.TransparentColor = Color.Transparent;
             SelectionStatusImageList.Images.SetKeyName(0, "LED_black_red_green_medium.h.72.png");
             // 
-            // CmdRefile
+            // ContextMenuForTreeView
             // 
-            CmdRefile.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            CmdRefile.Location = new Point(811, 22);
-            CmdRefile.Name = "CmdRefile";
-            CmdRefile.Size = new Size(256, 41);
-            CmdRefile.TabIndex = 1;
-            CmdRefile.Text = "2. Smart Re&file Included Content";
-            CmdRefile.UseVisualStyleBackColor = true;
-            CmdRefile.Click += CmdRefile_Click;
+            ContextMenuForTreeView.Items.AddRange(new ToolStripItem[] { CopyTextMenuItem });
+            ContextMenuForTreeView.Name = "ContextMenuForTreeView";
+            ContextMenuForTreeView.Size = new Size(243, 48);
+            ContextMenuForTreeView.ItemClicked += ContextMenuForTreeView_ItemClicked;
+            // 
+            // CopyTextMenuItem
+            // 
+            CopyTextMenuItem.Name = "CopyTextMenuItem";
+            CopyTextMenuItem.Size = new Size(242, 22);
+            CopyTextMenuItem.Text = "Copy All Full Paths to Clipboard";
             // 
             // GetParameters
             // 
@@ -314,6 +332,7 @@
             RefineGroup.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)PicSelectionStatus).EndInit();
             ProcessGroup.ResumeLayout(false);
+            ContextMenuForTreeView.ResumeLayout(false);
             ResumeLayout(false);
         }
 
@@ -342,5 +361,7 @@
         private FolderBrowserDialog folderBrowserDialog1;
         private ImageList SelectionStatusImageList;
         private Button CmdRefile;
+        private ContextMenuStrip ContextMenuForTreeView;
+        private ToolStripMenuItem CopyTextMenuItem;
     }
 }

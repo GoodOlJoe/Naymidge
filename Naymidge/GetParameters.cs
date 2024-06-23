@@ -1,4 +1,7 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Diagnostics;
+using System.Reflection;
+using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Naymidge
 {
@@ -256,5 +259,27 @@ namespace Naymidge
             tvIncluded.Width = tvNotIncluded.Width;
             PositionLabels();
         }
+
+        private void ContextMenuForTreeView_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+            if (null != sender && sender is ContextMenuStrip menu)
+                if (null != menu.Tag && CopyTextMenuItem == e.ClickedItem)
+                    Clipboard.SetText(GetTVItemsAsText((TreeView)menu.Tag));
+        }
+        private static string GetTVItemsAsText(TreeView tv)
+        {
+            StringBuilder sb = new();
+            foreach (TreeNode n in tv.Nodes)
+                sb.AppendLine(n.ToolTipText);
+            return sb.ToString();
+        }
+        private void DisplayTVContextMenu(TreeView tv)
+        {
+            ContextMenuForTreeView.Tag = tv;
+            ContextMenuForTreeView.Show(MousePosition);
+        }
+        private void TvIncluded_MouseClick(object sender, MouseEventArgs e) { if (MouseButtons.Right == e.Button) DisplayTVContextMenu((TreeView)sender); }
+        private void TvNotIncluded_MouseClick(object sender, MouseEventArgs e) { if (MouseButtons.Right == e.Button) DisplayTVContextMenu((TreeView)sender); }
     }
 }
+
