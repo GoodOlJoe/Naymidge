@@ -4,6 +4,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Naymidge
 {
@@ -98,6 +99,22 @@ Alt-D    Enter Date Taken                   F12    Next item";
             _MaxFileNameLength = _MaxFQNLength - pathLength - extLength;
 
         }
+        
+        // WHERE I'M AT AS OF 6 FEB 2025 I guess I'm not really going to be able
+        // to use this approach because the regex patterns are dynamic for each
+        // image. I may have to have separate functions (modified copies ofr
+        // PopulateBackImage that do their own regex for the types of patterns,
+        // and just call each one until one returns True or something/ put the
+        // most frequent ones first (now the most frequent one will be the
+        // FastFoto patterns where *_a.jpg is the front and *_b.jpg is the back
+
+        private class FrontBackImagePattern
+        {
+            public string BackPatternForThisFront = "";
+            public string BackWildcard = "";
+            public string ExactBack = "";
+        }
+
         private void PopulateBackImage(string frontImageFQN)
         {
             string ext = Path.GetExtension(frontImageFQN);
@@ -344,7 +361,7 @@ Alt-D    Enter Date Taken                   F12    Next item";
 
 
             ProgressLabel.Text =
-@$"delete    {delete,6:N0}
+        @$"delete    {delete,6:N0}
 rename    {rename,6:N0}
 no action {undetermined,6:N0}
 ----------------
