@@ -53,6 +53,11 @@ namespace Naymidge
                             Name = "GPS Date Stamp"
                         },
                         new() {
+                            FactSourceCandidateType = FactSourceCandidateType.MetaData,
+                            Directory = "QuickTime Movie Header",
+                            Name = "Created"
+                        },
+                        new() {
                             FactSourceCandidateType = FactSourceCandidateType.FileInfo,
                             Directory = "FileInfo",
                             Name = "CreationTime"
