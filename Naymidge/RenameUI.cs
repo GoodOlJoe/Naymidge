@@ -4,6 +4,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Naymidge
 {
@@ -14,7 +15,7 @@ namespace Naymidge
         private readonly List<FileInstruction> _Instructions;
         private int CurrentItem = 0;
         private const string DeleteNotice = "(marked for deletion)";
-        private const string ReuseLastNameShortcut = "ÿ";
+        private const string ReuseLastNameShortcut = "ï¿½";
         private int DecCurrent => CurrentItem == 0 ? _Instructions.Count - 1 : --CurrentItem;
         private int IncCurrent => CurrentItem >= _Instructions.Count - 1 ? 0 : ++CurrentItem;
         private const int _MaxFQNLength = 258; // windows limit
@@ -71,7 +72,26 @@ Alt-D    Enter Date Taken                   F12    Next item";
             lblPositionDisplay.Text = $"{CurrentItem + 1}/{_Instructions.Count}";
             LayoutPositionDisplay();
             OpenMedia(PlayerMain, CurrentItem);
-            PopulateBackImage(_Instructions[CurrentItem].FQN);
+
+            // the relationship between the front image filename and the
+            // corresponding back image file name differs depending on how we
+            // scanned. And the patterns are dynamic so we unfortunately
+            // separate standalone functions for finding the right back image.
+            // Any of these BackImageHandler functions has to test the incoming
+            // filename to see if it fits "its" pattern, and if it does, load up
+            // the back image and return true. If it doesn't fit "its" pattern,
+            // it returns false.
+            List<Func<string, bool>> BackImageHandlers = [
+                PopulateBackImageFastFotoPattern,
+                PopulateBackImageHomeGrownPattern,
+                ];
+
+            for (int i = 0; i < BackImageHandlers.Count; i++)
+            {
+                if (BackImageHandlers[i](_Instructions[CurrentItem].FQN))
+                    break;
+            }
+
             UpdateFilenameCharCounter();
         }
         private void UpdateMediaDetails()
@@ -98,7 +118,46 @@ Alt-D    Enter Date Taken                   F12    Next item";
             _MaxFileNameLength = _MaxFQNLength - pathLength - extLength;
 
         }
-        private void PopulateBackImage(string frontImageFQN)
+
+        // WHERE I'M AT AS OF 6 FEB 2025 I guess I'm not really going to be able
+        // to use this approach because the regex patterns are dynamic for each
+        // image. I may have to have separate functions (modified copies ofr
+        // PopulateBackImage that do their own regex for the types of patterns,
+        // and just call each one until one returns True or something/ put the
+        // most frequent ones first (now the most frequent one will be the
+        // FastFoto patterns where *_a.jpg is the front and *_b.jpg is the back
+
+        private class FrontBackImagePattern
+        {
+            public string BackPatternForThisFront = "";
+            public string BackWildcard = "";
+            public string ExactBack = "";
+        }
+
+        private bool PopulateBackImageFastFotoPattern(string frontImageFQN)
+        {
+            string ext = Path.GetExtension(frontImageFQN);
+            string backPatternForThisFront = @$"^(?<rootname>((?<prefix>.+)_(?<serial>\d\d\d\d)))(_a)?(?<ext>{ext})$";
+            string fname = Path.GetFileName(frontImageFQN);
+            string? dn = Path.GetDirectoryName(frontImageFQN);
+            string dname = string.IsNullOrEmpty(dn) ? "" : dn;
+
+            Match match = Regex.Match(fname, backPatternForThisFront);
+            if (!match.Success) return false;
+
+            string backFName = Path.Combine(dname, $"{match.Groups["rootname"]}_b{ext}");
+            if (File.Exists(backFName))
+            {
+                // now load the most likely back'sLineKey image
+                DisplayBackImage(backFName);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        private bool PopulateBackImageHomeGrownPattern(string frontImageFQN)
         {
             string ext = Path.GetExtension(frontImageFQN);
             string backPatternForThisFront = $"^(?<prefix>[A-Za-z]+)1(?<serial>.+)(?<ext>{ext})$";
@@ -107,7 +166,7 @@ Alt-D    Enter Date Taken                   F12    Next item";
             string dname = string.IsNullOrEmpty(dn) ? "" : dn;
 
             Match match = Regex.Match(fname, backPatternForThisFront);
-            if (!match.Success) return;
+            if (!match.Success) return false;
 
             // populate list with 'possible' backs for the given front image
             string backWildcard = $"{match.Groups["prefix"].Value}2*{ext}";
@@ -129,6 +188,8 @@ Alt-D    Enter Date Taken                   F12    Next item";
             // now load the most likely back'sLineKey image
             string exactBack = $"{match.Groups["prefix"].Value}2{match.Groups["serial"].Value}{ext}";
             DisplayBackImage(Path.Combine(dname, exactBack));
+
+            return true;
         }
         private void OpenMedia(Player player, int index)
         {
@@ -147,7 +208,6 @@ Alt-D    Enter Date Taken                   F12    Next item";
                 _ => 0,
             };
         }
-        private void BackDetailsLabel_TextChanged(object sender, EventArgs e) { SetBackDetailsLabelPosition(); }
         private void CmdCancel_Click(object sender, EventArgs e) { DoCancelButtonClicked(); }
         private void CmdProceed_Click(object? sender, EventArgs e) { DoProceedButtonClicked(); }
         private void InnerContainer_SplitterMoved(object sender, SplitterEventArgs e) { DoLayout(); }
@@ -170,7 +230,6 @@ Alt-D    Enter Date Taken                   F12    Next item";
             Process.Start(new ProcessStartInfo(target) { UseShellExecute = true });
         }
         private void AddRecentEntryToUi(string entry) { AddRecentEntryToHistory(entry); }
-        private void SetBackDetailsLabelPosition() { DockUpperRight(BackDetailsLabel, PicboxBack); }
         private void DoCancelButtonClicked()
         {
             int delete = _Instructions.Where(inst => inst.Verb == FileInstructionVerb.Delete && !inst.Completed).Count();
@@ -207,7 +266,6 @@ Alt-D    Enter Date Taken                   F12    Next item";
             MiddlePanel.Width = ClientRectangle.Width;
 
             SetBackImagePosition();
-            SetBackDetailsLabelPosition();
             UpdateProgressLabel();
             LayoutPositionDisplay();
         }
@@ -310,11 +368,9 @@ Alt-D    Enter Date Taken                   F12    Next item";
             if (File.Exists(FQN))
             {
                 PicboxBack.ImageLocation = FQN;
-                BackDetailsLabel.Text = Path.GetFileName(FQN);
             }
             else
             {
-                BackDetailsLabel.Text = "";
                 PicboxBack.Image = null;
             }
         }
@@ -344,7 +400,7 @@ Alt-D    Enter Date Taken                   F12    Next item";
 
 
             ProgressLabel.Text =
-@$"delete    {delete,6:N0}
+        @$"delete    {delete,6:N0}
 rename    {rename,6:N0}
 no action {undetermined,6:N0}
 ----------------

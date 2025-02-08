@@ -45,7 +45,6 @@
             InnerContainer = new SplitContainer();
             flyleafHostMain = new FlyleafLib.Controls.WinForms.FlyleafHost();
             BackImageAccessLabel = new Label();
-            BackDetailsLabel = new Label();
             TvAllBacks = new TreeView();
             PicboxBack = new PictureBox();
             TxtRecent = new TextBox();
@@ -246,7 +245,6 @@
             // 
             InnerContainer.Panel2.BackColor = Color.FromArgb(128, 128, 255);
             InnerContainer.Panel2.Controls.Add(BackImageAccessLabel);
-            InnerContainer.Panel2.Controls.Add(BackDetailsLabel);
             InnerContainer.Panel2.Controls.Add(TvAllBacks);
             InnerContainer.Panel2.Controls.Add(PicboxBack);
             InnerContainer.Size = new Size(759, 421);
@@ -286,19 +284,6 @@
             BackImageAccessLabel.TabIndex = 6;
             BackImageAccessLabel.Text = "Select &Back To View";
             // 
-            // BackDetailsLabel
-            // 
-            BackDetailsLabel.Anchor = AnchorStyles.None;
-            BackDetailsLabel.AutoSize = true;
-            BackDetailsLabel.BackColor = Color.Transparent;
-            BackDetailsLabel.Font = new Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            BackDetailsLabel.Location = new Point(603, 34);
-            BackDetailsLabel.Margin = new Padding(0);
-            BackDetailsLabel.Name = "BackDetailsLabel";
-            BackDetailsLabel.Size = new Size(74, 13);
-            BackDetailsLabel.TabIndex = 2;
-            BackDetailsLabel.Text = "{back details}";
-            // 
             // TvAllBacks
             // 
             TvAllBacks.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
@@ -306,13 +291,13 @@
             TvAllBacks.Location = new Point(0, 16);
             TvAllBacks.Name = "TvAllBacks";
             TvAllBacks.ShowNodeToolTips = true;
-            TvAllBacks.Size = new Size(287, 103);
+            TvAllBacks.Size = new Size(287, 99);
             TvAllBacks.TabIndex = 7;
             TvAllBacks.AfterSelect += TvAllBacks_AfterSelect;
             // 
             // PicboxBack
             // 
-            PicboxBack.Dock = DockStyle.Right;
+            PicboxBack.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             PicboxBack.Location = new Point(424, 0);
             PicboxBack.Name = "PicboxBack";
             PicboxBack.Size = new Size(333, 135);
@@ -378,7 +363,6 @@
         private SplitContainer OuterContainer;
         private SplitContainer InnerContainer;
         private FlyleafLib.Controls.WinForms.FlyleafHost flyleafHostMain;
-        private Label BackDetailsLabel;
         private TreeView TvAllBacks;
         private PictureBox PicboxBack;
         private TextBox TxtRecent;
