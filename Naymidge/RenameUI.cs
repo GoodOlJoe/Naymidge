@@ -145,11 +145,11 @@ Alt-D    Enter Date Taken                   F12    Next item";
             Match match = Regex.Match(fname, backPatternForThisFront);
             if (!match.Success) return false;
 
-            string backFName = $"{match.Groups["rootname"]}_b{ext}";
+            string backFName = Path.Combine(dname, $"{match.Groups["rootname"]}_b{ext}");
             if (File.Exists(backFName))
             {
                 // now load the most likely back'sLineKey image
-                DisplayBackImage(Path.Combine(dname, backFName));
+                DisplayBackImage(backFName);
                 return true;
             }
             else
