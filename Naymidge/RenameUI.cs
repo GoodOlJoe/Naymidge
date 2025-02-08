@@ -72,7 +72,26 @@ Alt-D    Enter Date Taken                   F12    Next item";
             lblPositionDisplay.Text = $"{CurrentItem + 1}/{_Instructions.Count}";
             LayoutPositionDisplay();
             OpenMedia(PlayerMain, CurrentItem);
-            PopulateBackImage(_Instructions[CurrentItem].FQN);
+
+            // the relationship between the front image filename and the
+            // corresponding back image file name differs depending on how we
+            // scanned. And the patterns are dynamic so we unfortunately
+            // separate standalone functions for finding the right back image.
+            // Any of these BackImageHandler functions has to test the incoming
+            // filename to see if it fits "its" pattern, and if it does, load up
+            // the back image and return true. If it doesn't fit "its" pattern,
+            // it returns false.
+            List<Func<string, bool>> BackImageHandlers = [
+                PopulateBackImageFastFotoPattern,
+                PopulateBackImageHomeGrownPattern,
+                ];
+
+            for (int i = 0; i < BackImageHandlers.Count; i++)
+            {
+                if (BackImageHandlers[i](_Instructions[CurrentItem].FQN))
+                    break;
+            }
+
             UpdateFilenameCharCounter();
         }
         private void UpdateMediaDetails()
@@ -99,7 +118,7 @@ Alt-D    Enter Date Taken                   F12    Next item";
             _MaxFileNameLength = _MaxFQNLength - pathLength - extLength;
 
         }
-        
+
         // WHERE I'M AT AS OF 6 FEB 2025 I guess I'm not really going to be able
         // to use this approach because the regex patterns are dynamic for each
         // image. I may have to have separate functions (modified copies ofr
@@ -115,7 +134,30 @@ Alt-D    Enter Date Taken                   F12    Next item";
             public string ExactBack = "";
         }
 
-        private void PopulateBackImage(string frontImageFQN)
+        private bool PopulateBackImageFastFotoPattern(string frontImageFQN)
+        {
+            string ext = Path.GetExtension(frontImageFQN);
+            string backPatternForThisFront = @$"^(?<rootname>((?<prefix>.+)_(?<serial>\d\d\d\d)))(_a)?(?<ext>{ext})$";
+            string fname = Path.GetFileName(frontImageFQN);
+            string? dn = Path.GetDirectoryName(frontImageFQN);
+            string dname = string.IsNullOrEmpty(dn) ? "" : dn;
+
+            Match match = Regex.Match(fname, backPatternForThisFront);
+            if (!match.Success) return false;
+
+            string backFName = $"{match.Groups["rootname"]}_b{ext}";
+            if (File.Exists(backFName))
+            {
+                // now load the most likely back'sLineKey image
+                DisplayBackImage(Path.Combine(dname, backFName));
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        private bool PopulateBackImageHomeGrownPattern(string frontImageFQN)
         {
             string ext = Path.GetExtension(frontImageFQN);
             string backPatternForThisFront = $"^(?<prefix>[A-Za-z]+)1(?<serial>.+)(?<ext>{ext})$";
@@ -124,7 +166,7 @@ Alt-D    Enter Date Taken                   F12    Next item";
             string dname = string.IsNullOrEmpty(dn) ? "" : dn;
 
             Match match = Regex.Match(fname, backPatternForThisFront);
-            if (!match.Success) return;
+            if (!match.Success) return false;
 
             // populate list with 'possible' backs for the given front image
             string backWildcard = $"{match.Groups["prefix"].Value}2*{ext}";
@@ -146,6 +188,8 @@ Alt-D    Enter Date Taken                   F12    Next item";
             // now load the most likely back'sLineKey image
             string exactBack = $"{match.Groups["prefix"].Value}2{match.Groups["serial"].Value}{ext}";
             DisplayBackImage(Path.Combine(dname, exactBack));
+
+            return true;
         }
         private void OpenMedia(Player player, int index)
         {
