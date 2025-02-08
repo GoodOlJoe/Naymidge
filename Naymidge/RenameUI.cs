@@ -15,7 +15,7 @@ namespace Naymidge
         private readonly List<FileInstruction> _Instructions;
         private int CurrentItem = 0;
         private const string DeleteNotice = "(marked for deletion)";
-        private const string ReuseLastNameShortcut = "ÿ";
+        private const string ReuseLastNameShortcut = "ï¿½";
         private int DecCurrent => CurrentItem == 0 ? _Instructions.Count - 1 : --CurrentItem;
         private int IncCurrent => CurrentItem >= _Instructions.Count - 1 ? 0 : ++CurrentItem;
         private const int _MaxFQNLength = 258; // windows limit
@@ -208,7 +208,6 @@ Alt-D    Enter Date Taken                   F12    Next item";
                 _ => 0,
             };
         }
-        private void BackDetailsLabel_TextChanged(object sender, EventArgs e) { SetBackDetailsLabelPosition(); }
         private void CmdCancel_Click(object sender, EventArgs e) { DoCancelButtonClicked(); }
         private void CmdProceed_Click(object? sender, EventArgs e) { DoProceedButtonClicked(); }
         private void InnerContainer_SplitterMoved(object sender, SplitterEventArgs e) { DoLayout(); }
@@ -231,7 +230,6 @@ Alt-D    Enter Date Taken                   F12    Next item";
             Process.Start(new ProcessStartInfo(target) { UseShellExecute = true });
         }
         private void AddRecentEntryToUi(string entry) { AddRecentEntryToHistory(entry); }
-        private void SetBackDetailsLabelPosition() { DockUpperRight(BackDetailsLabel, PicboxBack); }
         private void DoCancelButtonClicked()
         {
             int delete = _Instructions.Where(inst => inst.Verb == FileInstructionVerb.Delete && !inst.Completed).Count();
@@ -268,7 +266,6 @@ Alt-D    Enter Date Taken                   F12    Next item";
             MiddlePanel.Width = ClientRectangle.Width;
 
             SetBackImagePosition();
-            SetBackDetailsLabelPosition();
             UpdateProgressLabel();
             LayoutPositionDisplay();
         }
@@ -371,11 +368,9 @@ Alt-D    Enter Date Taken                   F12    Next item";
             if (File.Exists(FQN))
             {
                 PicboxBack.ImageLocation = FQN;
-                BackDetailsLabel.Text = Path.GetFileName(FQN);
             }
             else
             {
-                BackDetailsLabel.Text = "";
                 PicboxBack.Image = null;
             }
         }
