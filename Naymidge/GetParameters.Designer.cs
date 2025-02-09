@@ -45,6 +45,8 @@
             txtPatterns = new TextBox();
             PicSelectionStatus = new PictureBox();
             ProcessGroup = new GroupBox();
+            CheckboxSuggestDatestamp = new CheckBox();
+            label2 = new Label();
             CmdRefile = new Button();
             CmdRename = new Button();
             cmdClose = new Button();
@@ -238,6 +240,8 @@
             // ProcessGroup
             // 
             ProcessGroup.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            ProcessGroup.Controls.Add(CheckboxSuggestDatestamp);
+            ProcessGroup.Controls.Add(label2);
             ProcessGroup.Controls.Add(CmdRefile);
             ProcessGroup.Controls.Add(CmdRename);
             ProcessGroup.Location = new Point(22, 431);
@@ -246,6 +250,27 @@
             ProcessGroup.TabIndex = 2;
             ProcessGroup.TabStop = false;
             ProcessGroup.Text = "Processing";
+            // 
+            // CheckboxSuggestDatestamp
+            // 
+            CheckboxSuggestDatestamp.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            CheckboxSuggestDatestamp.AutoSize = true;
+            CheckboxSuggestDatestamp.Location = new Point(500, 25);
+            CheckboxSuggestDatestamp.Name = "CheckboxSuggestDatestamp";
+            CheckboxSuggestDatestamp.Size = new Size(15, 14);
+            CheckboxSuggestDatestamp.TabIndex = 4;
+            CheckboxSuggestDatestamp.UseVisualStyleBackColor = true;
+            // 
+            // label2
+            // 
+            label2.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            label2.AutoSize = true;
+            label2.Font = new Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            label2.Location = new Point(290, 25);
+            label2.Name = "label2";
+            label2.Size = new Size(207, 13);
+            label2.TabIndex = 3;
+            label2.Text = "Suggest a date stamp when renaming?";
             // 
             // CmdRefile
             // 
@@ -300,7 +325,7 @@
             // 
             ContextMenuForTreeView.Items.AddRange(new ToolStripItem[] { CopyTextMenuItem });
             ContextMenuForTreeView.Name = "ContextMenuForTreeView";
-            ContextMenuForTreeView.Size = new Size(243, 48);
+            ContextMenuForTreeView.Size = new Size(243, 26);
             ContextMenuForTreeView.ItemClicked += ContextMenuForTreeView_ItemClicked;
             // 
             // CopyTextMenuItem
@@ -332,6 +357,7 @@
             RefineGroup.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)PicSelectionStatus).EndInit();
             ProcessGroup.ResumeLayout(false);
+            ProcessGroup.PerformLayout();
             ContextMenuForTreeView.ResumeLayout(false);
             ResumeLayout(false);
         }
@@ -363,5 +389,7 @@
         private Button CmdRefile;
         private ContextMenuStrip ContextMenuForTreeView;
         private ToolStripMenuItem CopyTextMenuItem;
+        private CheckBox CheckboxSuggestDatestamp;
+        private Label label2;
     }
 }

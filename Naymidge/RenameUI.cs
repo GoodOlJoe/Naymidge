@@ -20,9 +20,12 @@ namespace Naymidge
         private int IncCurrent => CurrentItem >= _Instructions.Count - 1 ? 0 : ++CurrentItem;
         private const int _MaxFQNLength = 258; // windows limit
         private int _MaxFileNameLength = _MaxFQNLength; // adjusted for each file based on path
+        private bool SuggestDateStamp = false;
 
-        public RenameUI(ProcessingScope scope)
+        public RenameUI(ProcessingScope scope, RenameParameters renameParameters)
         {
+            SuggestDateStamp = renameParameters.SuggestDateStamp;
+
             // _Scope.Contents has the original files to be acted upon, as selected by the caller
             // _Instructions contains the decisions made by the user of this form: to delete or rename, etc.
             _Instructions = new List<FileInstruction>(scope.Contents.Count);
@@ -86,6 +89,7 @@ Alt-D    Enter Date Taken                   F12    Next item";
                 PopulateBackImageHomeGrownPattern,
                 ];
 
+            ClearBackImage();
             for (int i = 0; i < BackImageHandlers.Count; i++)
             {
                 if (BackImageHandlers[i](_Instructions[CurrentItem].FQN))
@@ -94,6 +98,7 @@ Alt-D    Enter Date Taken                   F12    Next item";
 
             UpdateFilenameCharCounter();
         }
+        private void ClearBackImage() { PicboxBack.Image = null; }
         private void UpdateMediaDetails()
         {
             FileInstruction finst = _Instructions[CurrentItem];
@@ -354,7 +359,7 @@ Alt-D    Enter Date Taken                   F12    Next item";
                 default:
                     //txtNameInput.Clear();
                     // if there's no name, put a helper value of the date taken
-                    txtNameInput.Text = $"{_Instructions[itemNdx].DateTaken} ";
+                    if (SuggestDateStamp) txtNameInput.Text = $"{_Instructions[itemNdx].DateTaken} ";
                     txtNameInput.SelectionStart = txtNameInput.Text.Length;
                     txtNameInput.SelectionLength = 0;
                     break;

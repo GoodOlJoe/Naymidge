@@ -16,6 +16,7 @@ namespace Naymidge
         private readonly List<string> _Contents = new(1000);
         private readonly Stack<Cursor> CursorStack = new(); // for tracking busy cursor
         private readonly ProcessingScope _Scope = new();
+        private readonly RenameParameters _RenameParameters = new();
 
         public GetParameters()
         {
@@ -39,6 +40,9 @@ namespace Naymidge
             txtPatterns.Text = Properties.Settings.Default.MruFilenamePatterns;
             CheckboxIncludeSubdirectories.DataBindings.Add(new Binding("Checked", Properties.Settings.Default, "MruIncludeSubdirectories", true, DataSourceUpdateMode.OnPropertyChanged));
             CheckboxIncludeSubdirectories.Checked = Properties.Settings.Default.MruIncludeSubdirectories;
+            CheckboxSuggestDatestamp.DataBindings.Add(new Binding("Checked", Properties.Settings.Default, "MruSuggestDatestamp", true, DataSourceUpdateMode.OnPropertyChanged));
+            CheckboxSuggestDatestamp.Checked = Properties.Settings.Default.MruSuggestDatestamp;
+            _RenameParameters.SuggestDateStamp = CheckboxSuggestDatestamp.Checked;
         }
         private bool UpdateScope()
         {
@@ -63,7 +67,8 @@ namespace Naymidge
         private void DoRenameForm()
         {
             if (!TrySelection()) return;
-            RenameUI frm = new(_Scope);
+            _RenameParameters.SuggestDateStamp = CheckboxSuggestDatestamp.Checked;
+            RenameUI frm = new(_Scope, _RenameParameters);
             frm.ShowDialog();
             DoRefreshSelection();
         }
