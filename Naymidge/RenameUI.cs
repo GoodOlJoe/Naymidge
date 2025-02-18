@@ -21,6 +21,8 @@ namespace Naymidge
         private const int _MaxFQNLength = 258; // windows limit
         private int _MaxFileNameLength = _MaxFQNLength; // adjusted for each file based on path
         private bool SuggestDateStamp = false;
+        private readonly Color colorNormal = SystemColors.WindowText;
+        private readonly Color colorHint = SystemColors.InactiveCaption;
 
         public RenameUI(ProcessingScope scope, RenameParameters renameParameters)
         {
@@ -226,7 +228,11 @@ Alt-D    Enter Date Taken                   F12    Next item";
         private void TvAllBacks_AfterSelect(object sender, TreeViewEventArgs e) { DoBackImageSelectionChanged(e); }
         private void RenameUI_KeyUp(object sender, KeyEventArgs e) { e.Handled = FormKeyUpHandled(e); }
         private void NameInput_KeyPress(object? sender, KeyPressEventArgs e) { e.Handled = InputKeyPressHandled(e); }
-        private void TxtNameInput_TextChanged(object sender, EventArgs e) { UpdateFilenameCharCounter(); }
+        private void TxtNameInput_TextChanged(object sender, EventArgs e)
+        {
+            txtNameInput.ForeColor = colorNormal; // once they're editing, switch to normal color (not 'hint' color)
+            UpdateFilenameCharCounter();
+        }
         private void MapLinkLabel_LinkClicked(object? sender, LinkLabelLinkClickedEventArgs e)
         {
             if (null == MapLinkLabel.Tag) return;
@@ -352,16 +358,22 @@ Alt-D    Enter Date Taken                   F12    Next item";
                     string? newName = _Instructions[itemNdx].NewFileName;
                     newName = string.IsNullOrEmpty(newName) ? "" : newName;
                     txtNameInput.Text = newName;
+                    txtNameInput.ForeColor = colorNormal; // what's showing in the text box is the real rename for this item
                     break;
                 case FileInstructionVerb.Delete:
                     txtNameInput.Text = DeleteNotice;
+                    txtNameInput.ForeColor = colorNormal; // deletes always show in the normal color
                     break;
                 default:
-                    //txtNameInput.Clear();
+                    if (txtNameInput.Text.Equals(DeleteNotice)) txtNameInput.Clear();
                     // if there's no name, put a helper value of the date taken
                     if (SuggestDateStamp) txtNameInput.Text = $"{_Instructions[itemNdx].DateTaken} ";
                     txtNameInput.SelectionStart = txtNameInput.Text.Length;
                     txtNameInput.SelectionLength = 0;
+                    // what's showing in the text box is the name of the previous item. We leave it there
+                    // because it's often easier to modify then type a new name each time. But the color
+                    // shows there's no name established for the current item yet
+                    txtNameInput.ForeColor = colorHint;
                     break;
             }
             UpdateProgressLabel();
