@@ -145,6 +145,8 @@ namespace Naymidge
             if (0 == _Contents.Count) CurrentSelectionStatus = SelectionStatus.NoContentDirectory;
             CmdRename.Enabled = _Contents.Count > 0;
             RefineGroup.Enabled = _Contents.Count > 0;
+            CmdRename.Enabled = tvIncluded.Nodes.Count > 0;
+            CmdRefile.Enabled = tvIncluded.Nodes.Count > 0;
         }
         private bool TrySelection()
         {
