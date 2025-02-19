@@ -57,6 +57,7 @@
                 ActionUI ui = new();
                 bool useDateTakenIfFilenameUndated = FileByDateCheckBox.Checked && UseDateTakenCheckBox.Checked;
                 ui.DoSmartRefiling(_Instructions, TargetTextbox.Text.Trim(), FileByDateCheckBox.Checked, useDateTakenIfFilenameUndated);
+                DoCancelButtonClicked();
             }
         }
         private void UpdateUIEnablement()

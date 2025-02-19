@@ -162,6 +162,11 @@ namespace Naymidge
                 TextStatus.ScrollToCaret();
             }
             ProgressBar.Value = 0;
+
+            // we run modeless but then we want to redisplay (blocking, on top
+            // of Z-order) so our caller can be sure when we return we are done.
+            Visible = false;
+            ShowDialog(); // redisplay modally
         }
 
         private void ActionUI_Resize(object sender, EventArgs e) { DoLayout(); }
