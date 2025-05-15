@@ -11,6 +11,22 @@ namespace Naymidge
     }
     internal class FileInstruction
     {
+        private static readonly Dictionary<string,string> MonthMap = new()
+        {
+            { "Jan", "01" },
+            { "Feb", "02" },
+            { "Mar", "03" },
+            { "Apr", "04" },
+            { "May", "05" },
+            { "Jun", "06" },
+            { "Jul", "07" },
+            { "Aug", "08" },
+            { "Sep", "09" },
+            { "Oct", "10" },
+            { "Nov", "11" },
+            { "Dec", "12" }
+        };
+
         private readonly string _FQN;
         public FileInstruction(string fqn)
         {
@@ -116,15 +132,30 @@ namespace Naymidge
             return retval;
         }
         private static string FormattedDateTimeTaken(string dateTaken)
-        {
+        { 
+
+            // first attempt
             string patternForMetaData = @"^(?<year>\d\d\d\d):(?<month>\d\d):(?<day>\d\d) (?<time>\d\d:\d\d:\d\d)$";
-
             Match match = Regex.Match(dateTaken, patternForMetaData);
-            if (!match.Success) return dateTaken;
+            if (match.Success)
+            {
+                GroupCollection gc = match.Groups;
+                return $"{gc["year"].Value} {gc["month"].Value} {gc["day"].Value} {gc["time"].Value}";
+            }
 
-            GroupCollection gc = match.Groups;
+            // second attempt
+            // Sun Aug 04 20:06:39 -04:00 2024
+            patternForMetaData = @"^... (?<month>...) (?<day>\d\d) (?<time>\d\d:\d\d:\d\d) ((?<offset>.\d\d:\d\d) )?(?<year>\d\d\d\d)$";
+            match = Regex.Match(dateTaken, patternForMetaData);
+            if (match.Success)
+            {
+                GroupCollection gc = match.Groups;
+                string month = MonthMap.ContainsKey(gc["month"].Value) ? MonthMap[gc["month"].Value] : gc["month"].Value;
+                // not bother with time zone offset at the moment
+                return $"{gc["year"].Value} {month} {gc["day"].Value} {gc["time"].Value}";
+            }
 
-            return $"{gc["year"].Value} {gc["month"].Value} {gc["day"].Value} {gc["time"].Value}";
+            return dateTaken;
         }
         private static string FormattedDateTaken(string dateTimeTaken)
         {

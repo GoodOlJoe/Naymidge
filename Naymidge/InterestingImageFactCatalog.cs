@@ -54,6 +54,11 @@ namespace Naymidge
                         },
                         new() {
                             FactSourceCandidateType = FactSourceCandidateType.MetaData,
+                            Directory = "QuickTime Metadata Header",
+                            Name = "Creation Date"
+                        },
+                        new() {
+                            FactSourceCandidateType = FactSourceCandidateType.MetaData,
                             Directory = "QuickTime Movie Header",
                             Name = "Created"
                         },
